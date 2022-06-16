@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { Button } from "react-bootstrap";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -7,11 +10,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { getPackages, deletePackage, reset } from '../../features/packages/packageSlice'
 
-function PackageDisplay() {
+function PackageDisplay({ user, packages, isError, isLoading, isSuccess, message }) {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
-            backgroundColor: theme.palette.common.black,
+            backgroundColor: theme.palette.secondary.dark,
             color: theme.palette.common.white,
         },
         [`&.${tableCellClasses.body}`]: {
@@ -48,43 +52,33 @@ function PackageDisplay() {
             deletePackage,
         };
     }
-    const packages = [
-        {
-            packageDescription: "shirt",
-            packageFrom: "edwin",
-            packageTo: "pam",
-            packageStatus: "open",
-            packageid: 1,
-        },
-        {
-            packageDescription: "shirt",
-            packageFrom: "edwin",
-            packageTo: "pam",
-            packageStatus: "intransit",
-            packageid: 2,
-        },
-        {
-            packageDescription: "shirt",
-            packageFrom: "edwin",
-            packageTo: "pam",
-            packageStatus: "failed",
-            packageid: 3,
-        },
-        {
-            packageDescription: "shirt",
-            packageFrom: "edwin",
-            packageTo: "pam",
-            packageStatus: "open",
-            packageid: 4,
-        },
-        {
-            packageDescription: "shirt",
-            packageFrom: "edwin",
-            packageTo: "pam",
-            packageStatus: "delivered",
-            packageid: 5,
-        },
-    ];
+    const [tableData, setTableData] = useState([]);
+ 
+
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (isError) {
+            console.log(message);
+        }
+        if (!user) {
+            navigate("/login");
+        }
+        dispatch(getPackages());
+        setTableData(packages);
+        return () => {
+            dispatch(reset());
+        };
+    }, [user]);
+    const handleDelete = async (id) => {
+        if (window.confirm("are you sure you want to delete the package?")) {
+            await dispatch(deletePackage(id));
+
+            dispatch(getPackages());
+        }
+    };
     const renderPackageStatus = (pack) => {
         if (pack.packageStatus === "open") {
             return <Button style={{width: '100px'}} variant="primary">{pack.packageStatus}</Button>;
@@ -134,18 +128,18 @@ function PackageDisplay() {
                     </TableHead>
                     <TableBody>
                         {packages.map((pack) => (
-                            <StyledTableRow key={pack.packageid}>
+                            <StyledTableRow key={pack._id}>
                                 <StyledTableCell component="th" scope="row">
-                                    {pack.packageid}
+                                    {pack._id}
                                 </StyledTableCell>
                                 <StyledTableCell component="th" scope="row">
-                                    {pack.packageDescription}
+                                    {pack.description}
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
-                                    {pack.packageFrom}
+                                    {pack.from_name}
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
-                                    {pack.packageTo}
+                                    {pack.to_name}
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
                                     {renderPackageStatus(pack)}
@@ -164,7 +158,7 @@ function PackageDisplay() {
                                     </Button>
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
-                                    <Button variant="outline-danger">
+                                    <Button onClick={()=>handleDelete(pack._id)} variant="outline-danger">
                                         <i
                                             class="fa fa-trash"
                                             aria-hidden="true"

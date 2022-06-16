@@ -15,12 +15,20 @@ main {
   margin-top: 1rem;
 }
 .home-banner {
-  background-image: url('./assets/image\ \(1\).jpg');
+  background-image: url('https://images.unsplash.com/photo-1631010231130-5c7828d9a3a7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80');
   min-height: 90vh;
   background-position: center;
   background-size: contain;
 }
-
+.pagination {
+  display: flex;
+  list-style: none;
+}
+.page-item {
+  margin-right: 0rem;
+  color: aqua;
+  text-align: center;
+}
 .sidebar {
   background-color: rgb(244, 244, 244);
   height: 85vh;
