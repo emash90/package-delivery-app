@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login, reset } from "../features/auth/authSlice";
+import SpinnerComponent from "../components/SpinnerComponent";
 
 function LoginPage() {
     const [formData, setFormData] = useState({
@@ -45,11 +46,24 @@ function LoginPage() {
                     position: toast.POSITION.TOP_CENTER
                 });
                 navigate("/dashboard");
+            } else if(user.userType === 'driver') {
+                toast("welcome driver", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                navigate("/driverdashboard");
+            } else {
+                toast("welcome admin", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                navigate("/admin");
             }
         }
 
         dispatch(reset());
     }, [user, userType, isError, isSuccess, message, navigate, dispatch]);
+    if(isLoading){
+        return <SpinnerComponent />
+    }
     return (
         <div className="login-form">
             <section className="heading">

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -10,9 +10,21 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { getPackages, deletePackage, reset } from '../../features/packages/packageSlice'
+import {
+    getPackages,
+    deletePackage,
+    reset,
+} from "../../features/packages/packageSlice";
+import SpinnerComponent from "../SpinnerComponent";
 
-function PackageDisplay({ user, packages, isError, isLoading, isSuccess, message }) {
+function PackageDisplay({
+    user,
+    packages,
+    isError,
+    isLoading,
+    isSuccess,
+    message,
+}) {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
             backgroundColor: theme.palette.secondary.dark,
@@ -53,11 +65,9 @@ function PackageDisplay({ user, packages, isError, isLoading, isSuccess, message
         };
     }
     const [tableData, setTableData] = useState([]);
- 
 
-
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (isError) {
@@ -79,18 +89,42 @@ function PackageDisplay({ user, packages, isError, isLoading, isSuccess, message
             dispatch(getPackages());
         }
     };
+    const handleEdit = (id) => {
+        navigate(`/dashboard/edit/${id}`);
+    };
+    const handleDetails = (packageId) => {
+        navigate(`/dashboard/view/${packageId}`);
+    };
     const renderPackageStatus = (pack) => {
         if (pack.packageStatus === "open") {
-            return <Button style={{width: '100px'}} variant="primary">{pack.packageStatus}</Button>;
+            return (
+                <Button style={{ width: "100px" }} variant="primary">
+                    {pack.packageStatus}
+                </Button>
+            );
         } else if (pack.packageStatus === "failed") {
-            return <Button style={{width: '100px'}}  variant="danger">{pack.packageStatus}</Button>;
+            return (
+                <Button style={{ width: "100px" }} variant="danger">
+                    {pack.packageStatus}
+                </Button>
+            );
         } else if (pack.packageStatus === "intransit") {
-            return <Button style={{width: '100px'}}  variant="secondary">{pack.packageStatus}</Button>;
+            return (
+                <Button style={{ width: "100px" }} variant="secondary">
+                    {pack.packageStatus}
+                </Button>
+            );
         } else {
-            return <Button style={{width: '100px'}}  variant="success">{pack.packageStatus}</Button>;
+            return (
+                <Button style={{ width: "100px" }} variant="success">
+                    {pack.packageStatus}
+                </Button>
+            );
         }
     };
-
+    if (isLoading) {
+        return <SpinnerComponent />;
+    }
     return (
         <div className="display-table">
             <h2>My Packages</h2>
@@ -112,10 +146,13 @@ function PackageDisplay({ user, packages, isError, isLoading, isSuccess, message
                             <StyledTableCell align="right">
                                 Package To
                             </StyledTableCell>
-                            <StyledTableCell align="right">
+                            <StyledTableCell align="center">
+                                Package Id
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
                                 Package Status
                             </StyledTableCell>
-                            <StyledTableCell align="right">
+                            <StyledTableCell align="center">
                                 package details
                             </StyledTableCell>
                             <StyledTableCell align="right">
@@ -127,46 +164,68 @@ function PackageDisplay({ user, packages, isError, isLoading, isSuccess, message
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {packages.map((pack) => (
-                            <StyledTableRow key={pack._id}>
-                                <StyledTableCell component="th" scope="row">
-                                    {pack._id}
-                                </StyledTableCell>
-                                <StyledTableCell component="th" scope="row">
-                                    {pack.description}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    {pack.from_name}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    {pack.to_name}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    {renderPackageStatus(pack)}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    <Button variant="outline-primary">
-                                        details
-                                    </Button>
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    <Button variant="outline-secondary">
-                                        <i
-                                            class="fa fa-edit"
-                                            aria-hidden="true"
-                                        ></i>
-                                    </Button>
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    <Button onClick={()=>handleDelete(pack._id)} variant="outline-danger">
-                                        <i
-                                            class="fa fa-trash"
-                                            aria-hidden="true"
-                                        ></i>
-                                    </Button>
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        ))}
+                        {packages.length > 0 ? (
+                            packages.map((pack, i) => (
+                                <StyledTableRow key={pack._id}>
+                                    <StyledTableCell component="th" scope="row">
+                                        {i + 1}
+                                    </StyledTableCell>
+                                    <StyledTableCell component="th" scope="row">
+                                        {pack.description}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {pack.from_name}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {pack.to_name}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {pack._id}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {renderPackageStatus(pack)}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        <Button
+                                            onClick={() =>
+                                                handleDetails(pack._id)
+                                            }
+                                            variant="outline-primary"
+                                        >
+                                            details
+                                        </Button>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        <Button
+                                            onClick={() => handleEdit(pack._id)}
+                                            variant="outline-secondary"
+                                        >
+                                            <i
+                                                class="fa fa-edit"
+                                                aria-hidden="true"
+                                            ></i>
+                                        </Button>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        <Button
+                                            onClick={() =>
+                                                handleDelete(pack._id)
+                                            }
+                                            variant="outline-danger"
+                                        >
+                                            <i
+                                                class="fa fa-trash"
+                                                aria-hidden="true"
+                                            ></i>
+                                        </Button>
+                                    </StyledTableCell>
+                                </StyledTableRow>
+                            ))
+                        ) : (
+                            <div>
+                                <h3>You have no packages yet</h3>
+                            </div>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

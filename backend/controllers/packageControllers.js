@@ -56,12 +56,13 @@ const createPackage = asyncHandler(async (req, res) => {
             to_name: req.body.to_name,
             to_address: req.body.to_address,
             to_location: {
-                latitude: req.body.from_locationLatitude,
-                longitude: req.body.from_locationLongitude,
+                latitude: req.body.to_locationLatitude,
+                longitude: req.body.to_locationLongitude,
             },
         });
         console.log(newPackage);
         newPackage.save();
+        console.log(newPackage.from_location);
         res.status(201).json(newPackage);
     } catch (error) {
         res.status(500);

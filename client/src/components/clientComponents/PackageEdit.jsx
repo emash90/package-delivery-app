@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createPackage } from "../../features/packages/packageSlice";
+import {
+    createPackage,
+    getOnePackage,
+} from "../../features/packages/packageSlice";
 import {
     Grid,
     TextField,
@@ -17,15 +20,20 @@ import {
 } from "@mui/material";
 import SpinnerComponent from "../SpinnerComponent";
 
-const PackageCreate = ({ currentLocation }) => {
+const PackageEdit = ({ currentLocation }) => {
+    const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    useEffect(() => {
+        dispatch(getOnePackage(id));
+    }, [getOnePackage]);
 
-    const { isError, Message, isLoading, isSuccess } = useSelector(
+    const { isError, Message, isLoading, isSuccess, onePackage } = useSelector(
         (state) => state.packages
     );
+    console.log(onePackage);
     const [formData, setFormData] = useState({
-        description: "",
+        description: onePackage.description,
         height: "",
         weight: "",
         depth: "",
@@ -62,6 +70,11 @@ const PackageCreate = ({ currentLocation }) => {
             [e.target.name]: e.target.value,
         }));
     };
+    useEffect(() => {
+        if (onePackage) {
+            setFormData({ ...onePackage });
+        }
+    }, [onePackage]);
     const onSubmit = async (e) => {
         try {
             await e.preventDefault();
@@ -113,7 +126,7 @@ const PackageCreate = ({ currentLocation }) => {
     }
     return (
         <>
-            <h4>Create Package</h4>
+            <h4>Edit Package</h4>
             <form onSubmit={onSubmit}>
                 <Grid container mt={3} direction="column">
                     <Grid item mb={3}>
@@ -123,6 +136,7 @@ const PackageCreate = ({ currentLocation }) => {
                             label="package description"
                             type="text"
                             name="description"
+                            value={description}
                             onChange={onChange}
                         />
                     </Grid>
@@ -210,7 +224,7 @@ const PackageCreate = ({ currentLocation }) => {
                             label="sender's location latitude"
                             type="number"
                             name="from_locationLatitude"
-                            value={currentLocation.lat}
+                            value={from_locationLatitude}
                             onChange={onChange}
                         />
                         <TextField
@@ -218,7 +232,7 @@ const PackageCreate = ({ currentLocation }) => {
                             label="sender's location longitude"
                             type="number"
                             name="from_locationLongitude"
-                            value={currentLocation.long}
+                            value={from_locationLongitude}
                             onChange={onChange}
                             style={{ marginRight: "3.5rem" }}
                         />
@@ -254,6 +268,7 @@ const PackageCreate = ({ currentLocation }) => {
                         variant="contained"
                         color="secondary"
                         type="button"
+                        onClick={() => navigate("/dashboard")}
                     >
                         Go back
                     </Button>
@@ -262,4 +277,4 @@ const PackageCreate = ({ currentLocation }) => {
         </>
     );
 };
-export default PackageCreate;
+export default PackageEdit;

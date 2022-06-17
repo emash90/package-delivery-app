@@ -3,6 +3,7 @@ import packageService from "./packageService";
 
 const initialState = {
     packages: [],
+    onePackage: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -179,7 +180,7 @@ export const packageSlice = createSlice({
             .addCase(getOnePackage.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.packages = action.payload;
+                state.onePackage = action.payload;
             })
             .addCase(getOnePackage.rejected, (state, action) => {
                 state.isLoading = false;

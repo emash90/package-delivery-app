@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import { Routes, Route } from "react-router-dom";
 import PackageCreate from "../components/clientComponents/PackageCreate";
@@ -6,6 +6,8 @@ import PackageCreate from "../components/clientComponents/PackageCreate";
 import PackageDisplay from "../components/clientComponents/PackageDisplay";
 import SideNavigation from "../components/clientComponents/SideNavigation";
 import Pagination from "../components/clientComponents/Pagination";
+import PackageDetails from "../components/clientComponents/PackageDetails";
+import PackageEdit from "../components/clientComponents/PackageEdit"
 
 function Dashboard({ user, packages, isError, isSuccess, message, isLoading }) {
 
@@ -20,7 +22,6 @@ function Dashboard({ user, packages, isError, isSuccess, message, isLoading }) {
    const paginate = (pageNumber) => {
      setCurrentPage(pageNumber)
    }
-console.log(`package number is ${packages.length}`);
 
     return (
         <div className="dashboard">
@@ -43,6 +44,9 @@ console.log(`package number is ${packages.length}`);
                                 path="/createpackage"
                                 element={<PackageCreate />}
                             />
+                            <Route path="/view/:id" element={<PackageDetails />} />
+                            <Route path="/edit/:id" element={<PackageEdit />} />
+
                         </Routes>
                     </Col>
                 </Row>

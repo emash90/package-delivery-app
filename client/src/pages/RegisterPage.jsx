@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { register, reset } from '../../src/features/auth/authSlice'
+
 import {
     Radio,
     RadioGroup,
@@ -8,8 +13,12 @@ import {
 } from "@mui/material";
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import SpinnerComponent from "../components/SpinnerComponent";
 
-function RegisterPage() {
+function RegisterPage({ user, packages }) {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const { isError, message, isSuccess, isLoading } = useSelector((state) => state.auth);
     const [value, setValue] = useState("");
 
     const [formData, setFormData] = useState({
@@ -31,10 +40,48 @@ function RegisterPage() {
             [e.target.name]: e.target.value,
         }));
     };
+ 
     const onSubmit = (e) => {
         e.preventDefault();
-        console.log('clicked register button');
+        if (password !== password2) {
+            toast.error("passwords do not match");
+        } else if (password.length < 6) {
+            toast("ensure password is more than 6 characters");
+        } else if (!firstName || !lastName || !email || !password) {
+            toast.error("Please ensure all fields are filled");
+        } else if (accountType == "") {
+            toast.error("please select either 'client', 'driver' or 'admin'");
+        } else {
+            const userData = {
+                firstName,
+                lastName,
+                accountType,
+                email,
+                password,
+            };
+            dispatch(register(userData));
+            console.log(userData);
+        }
     };
+    useEffect(() => {
+        if (isError) {
+            toast.error(message);
+        }
+        if (isSuccess) {
+            toast(`hey ${user.name}`);
+            if(user.accountType === 'client'){
+            navigate("/dashboard")
+            } else if(user.accountType === 'driver') {
+            navigate("/driverdashboard")
+            } else {
+            navigate("/admin")
+            }
+        }
+        dispatch(reset());
+    }, [isError, isSuccess, message, navigate, dispatch]);
+    if(isLoading) {
+        return <SpinnerComponent />
+    }
     return (
     <div className="register-form mb-3">
         <section className="heading">

@@ -7,13 +7,11 @@ const registerUser = asyncHandler(async (req, res) => {
     try {
         const { firstName, lastName, email, accountType, password } = req.body;
         if (!firstName || !lastName || !email || !password) {
-            res.status(401);
-            throw new Error({message: "please fill all fields"});
+            return res.status(401).json({message: "please fill all fields"});
         }
         const userExists = await User.findOne({ email });
         if (userExists) {
-            res.status(400);
-            throw new Error({message: "User with that emailaddress already exits"});
+            return res.status(400).json({message: "User with that email address already exits"});
         }
         //hash the password
         const salt = await bcrypt.genSalt(10);
@@ -37,12 +35,10 @@ const registerUser = asyncHandler(async (req, res) => {
                 token: generateToken(user._id),
             });
         } else {
-            res.status(400);
-            throw new Error("Invalid user data");
+           return  res.status(400).json({message: "Invalid user data"});
         }
     } catch (error) {
-        res.status(500);
-        throw new Error("error occured");
+        res.status(500).json({message: "error occured"});
     }
 });
 

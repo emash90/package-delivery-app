@@ -1,9 +1,150 @@
-import React from 'react'
+import * as React from "react";
+import { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import { Button } from "react-bootstrap";
+import Typography from "@mui/material/Typography";
+import { useNavigate, useParams } from "react-router-dom";
+import { Container, Col, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    getOnePackage,
+    deletePackage,
+    getPackages,
+} from "../../features/packages/packageSlice";
+import { toast } from "react-toastify";
 
-function PackageDetails() {
-  return (
-    <div>PackageDetails</div>
-  )
+function PackageDetails({ user }) {
+    const { onePackage } = useSelector((state) => state.packages);
+    const { id } = useParams();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    useEffect(() => {
+        dispatch(getOnePackage(id));
+    }, [getOnePackage]);
+
+    const goHome = () => {
+        navigate("/dashboard");
+    };
+    const handleDelete = async (id) => {
+        if (window.confirm("are you sure you want to delete the package?")) {
+            await dispatch(deletePackage(id));
+            navigate("/dashboard");
+
+            dispatch(getPackages());
+            toast("package delete successful");
+        }
+    };
+    const handleEdit = (id) => {
+        navigate(`/dashboard/edit/${id}`);
+    };
+
+    const bull = (
+        <Box
+            component="span"
+            sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
+        ></Box>
+    );
+    const card = (
+        <Container>
+            <Row>
+                <Col>
+                    <React.Fragment>
+                        <CardContent>
+                            <Typography
+                                sx={{ fontSize: 14 }}
+                                color="text.secondary"
+                                gutterBottom
+                            >
+                                packageID: {onePackage._id}
+                            </Typography>
+                            <Typography variant="h5" component="div">
+                                {onePackage.description}
+                            </Typography>
+                            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                Package from:{" "}
+                                <span
+                                    style={{
+                                        fontWeight: "bolder",
+                                        textTransform: "uppercase",
+                                        color: "black",
+                                    }}
+                                >
+                                    {" "}
+                                    {onePackage.from_name}{" "}
+                                </span>
+                                <br />
+                                from: {onePackage.from_address}
+                                <br />
+                                latitude: {
+                                    onePackage.from_locationLatitude
+                                }{" "}
+                                longitude {onePackage.from_locationLongitude}
+                                <br />
+                            </Typography>
+
+                            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                to:{" "}
+                                <span
+                                    style={{
+                                        fontWeight: "bolder",
+                                        textTransform: "uppercase",
+                                        color: "black",
+                                    }}
+                                >
+                                    {onePackage.to_name}
+                                </span>
+                                <br />
+                                in: {onePackage.to_address}
+                                <br />
+                                latitude: {onePackage.to_locationLatitude}{" "}
+                                longitude {onePackage.to_locationLongitude}
+                            </Typography>
+                            <Typography variant="body2">
+                                Package Details
+                                <br />
+                                Height: {onePackage.height}cm, weight:{" "}
+                                {onePackage.weight}g, depth: {onePackage.depth}
+                                cm, width: {onePackage.width}cm
+                            </Typography>
+                        </CardContent>
+                        <CardActions>
+                            <Button
+                                variant="outline-primary"
+                                onClick={goHome}
+                                size="large"
+                            >
+                                Home
+                            </Button>
+                            <Button
+                                variant="outline-secondary"
+                                onClick={() => handleEdit(onePackage._id)}
+                                size="small"
+                            >
+                                Edit Package
+                            </Button>
+                            <Button
+                                variant="outline-danger"
+                                onClick={() => handleDelete(onePackage._id)}
+                            >
+                                Delete Package
+                            </Button>
+                        </CardActions>
+                    </React.Fragment>
+                </Col>
+                <Col>
+                    <div>Goggle Map component here</div>
+                </Col>
+            </Row>
+        </Container>
+    );
+    return (
+        <Box sx={{ minWidth: 275 }}>
+            <Card variant="outlined">{card}</Card>
+        </Box>
+    );
 }
 
-export default PackageDetails
+export default PackageDetails;
