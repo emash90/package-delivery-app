@@ -51,13 +51,15 @@ const getOnePackage = async (packageId, token) => {
 };
 
 //update package
-const updatedPackage = async (id, token) => {
+const updatedPackage = async (updateData, token) => {
+    const id = updateData.id
+    const packageData = updateData.packageData
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.patch(API_URL + id, config);
+    const response = await axios.patch(API_URL + id, packageData, config);
 
     return response.data;
 };

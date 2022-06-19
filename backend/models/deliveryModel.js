@@ -9,6 +9,10 @@ const deliverySchema = new mongoose.Schema(
             required: true,
             ref: "User",
         },
+        packageDescription: {
+            type: String,
+            required: true
+        },
         packageId: {
             type: String,
             required: true,
@@ -29,9 +33,13 @@ const deliverySchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        deliveryLocation: {
+        packageTo: {
             type: String,
-            required: true,
+            required: false,
+        },
+        packageFrom: {
+            type: String,
+            required: false,
         },
     },
     {

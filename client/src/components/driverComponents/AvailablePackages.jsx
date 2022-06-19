@@ -12,19 +12,13 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { toast } from 'react-toastify'
 import {
-    getPackages,
-    deletePackage,
+    getAllPackages,
     reset,
 } from "../../features/packages/packageSlice";
 import SpinnerComponent from "../SpinnerComponent";
 
-function PackageDisplay({
-    user,
-    packages,
-    isError,
-    isLoading,
-    isSuccess,
-    message,
+function AvailablePackages({
+    user, allPackages, isSuccess, isError, message, isLoading
 }) {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -47,91 +41,44 @@ function PackageDisplay({
     }));
 
     function createData(
-        packageid,
         packageDescription,
         packageFrom,
         packageTo,
-        packageStatus,
-        packageDetails,
-        deletePackage
+        packageCreator,
+        packageDetails
     ) {
         return {
-            packageid,
             packageDescription,
             packageFrom,
             packageTo,
-            packageStatus,
+            packageCreator,
             packageDetails,
-            deletePackage,
         };
     }
     const [tableData, setTableData] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     useEffect(() => {
         if (isError) {
             console.log(message);
         }
-        if (!user) {
-            navigate("/login");
-        }
-        dispatch(getPackages());
-        setTableData(packages);
+        dispatch(getAllPackages());
+        setTableData(allPackages);
         return () => {
             dispatch(reset());
         };
-    }, [user]);
-    const handleDelete = async (id) => {
-        if (window.confirm("are you sure you want to delete the package?")) {
-            await dispatch(deletePackage(id));
-
-            dispatch(getPackages());
-            toast('delete successfull', {
-                position: toast.POSITION.TOP_CENTER,
-            })
-        }
-    };
-    const handleEdit = (id) => {
-        navigate(`/dashboard/edit/${id}`);
-    };
+    }, []);
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
-    const renderPackageStatus = (pack) => {
-        if (pack.packageStatus === "open") {
-            return (
-                <Button style={{ width: "100px" }} variant="primary">
-                    {pack.packageStatus}
-                </Button>
-            );
-        } else if (pack.packageStatus === "failed") {
-            return (
-                <Button style={{ width: "100px" }} variant="danger">
-                    {pack.packageStatus}
-                </Button>
-            );
-        } else if (pack.packageStatus === "intransit") {
-            return (
-                <Button style={{ width: "100px" }} variant="secondary">
-                    {pack.packageStatus}
-                </Button>
-            );
-        } else {
-            return (
-                <Button style={{ width: "100px" }} variant="success">
-                    {pack.packageStatus}
-                </Button>
-            );
-        }
-    };
+    
     if (isLoading) {
         return <SpinnerComponent />;
     }
     return (
         <div className="display-table">
-            <h2>My Packages</h2>
+            <h2>Available Packages</h2>
             <TableContainer component={Paper} style={{ width: 1050 }}>
                 <Table
                     size="medium"
@@ -151,25 +98,16 @@ function PackageDisplay({
                                 Package To
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                Package Id
-                            </StyledTableCell>
-                            <StyledTableCell align="center">
-                                Package Status
+                                Package creator
                             </StyledTableCell>
                             <StyledTableCell align="center">
                                 package details
                             </StyledTableCell>
-                            <StyledTableCell align="right">
-                                package edit
-                            </StyledTableCell>
-                            <StyledTableCell width={5} align="right">
-                                package delete
-                            </StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {packages.length > 0 ? (
-                            packages.map((pack, i) => (
+                        {allPackages.length > 0 ? (
+                            allPackages.map((pack, i) => (
                                 <StyledTableRow key={pack._id}>
                                     <StyledTableCell component="th" scope="row">
                                         {i + 1}
@@ -184,10 +122,7 @@ function PackageDisplay({
                                         {pack.to_name}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack._id}
-                                    </StyledTableCell>
-                                    <StyledTableCell align="right">
-                                        {renderPackageStatus(pack)}
+                                        {pack.packageCreator}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <Button
@@ -200,28 +135,10 @@ function PackageDisplay({
                                         </Button>
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        <Button
-                                            onClick={() => handleEdit(pack._id)}
-                                            variant="outline-secondary"
-                                        >
-                                            <i
-                                                className="fa fa-edit"
-                                                aria-hidden="true"
-                                            ></i>
-                                        </Button>
+                                        
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        <Button
-                                            onClick={() =>
-                                                handleDelete(pack._id)
-                                            }
-                                            variant="outline-danger"
-                                        >
-                                            <i
-                                                className="fa fa-trash"
-                                                aria-hidden="true"
-                                            ></i>
-                                        </Button>
+                                        
                                     </StyledTableCell>
                                 </StyledTableRow>
                             ))
@@ -237,4 +154,4 @@ function PackageDisplay({
     );
 }
 
-export default PackageDisplay;
+export default AvailablePackages;

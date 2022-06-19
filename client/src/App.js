@@ -16,7 +16,8 @@ import SpinnerComponent from "./components/SpinnerComponent";
 
 function App() {
     const user = useSelector((state) => state.auth.user);
-    const { packages, isError, message, isSuccess, isLoading } = useSelector((state) => state.packages);
+    const { allDeliveries, deliveries } = useSelector((state) => state.deliveries);
+    const { allPackages, onePackage, packages, isError, message, isSuccess, isLoading } = useSelector((state) => state.packages);
   
     return (
         <div className="App">
@@ -27,7 +28,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage message={message} user={user} packages={packages} isError={isError} isLoading={isLoading} isSuccess={isSuccess} />} />
                     <Route path="/dashboard/*" element={<Dashboard message={message} user={user} packages={packages} isError={isError} isLoading={isLoading} isSuccess={isSuccess} />} />
-                    <Route path="/driverdashboard/*" element={<DriverDashboard message={message} user={user} packages={packages} isError={isError} isLoading={isLoading} isSuccess={isSuccess} />} />
+                    <Route path="/driverdashboard/*" element={<DriverDashboard message={message} user={user} allPackages={allPackages} onePackage={onePackage} isError={isError} isLoading={isLoading} isSuccess={isSuccess} deliveries={deliveries} />} />
                     <Route path="/admin/*" element={<Admin message={message} user={user} packages={packages} isError={isError} isLoading={isLoading} isSuccess={isSuccess} />} />
 
                 </Routes>

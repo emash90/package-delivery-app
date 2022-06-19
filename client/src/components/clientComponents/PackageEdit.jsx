@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
+    getPackages,
     createPackage,
     getOnePackage,
+    updatedPackage,
 } from "../../features/packages/packageSlice";
 import {
     Grid,
@@ -31,7 +33,6 @@ const PackageEdit = ({ currentLocation }) => {
     const { isError, Message, isLoading, isSuccess, onePackage } = useSelector(
         (state) => state.packages
     );
-    console.log(onePackage);
     const [formData, setFormData] = useState({
         description: onePackage.description,
         height: "",
@@ -94,7 +95,11 @@ const PackageEdit = ({ currentLocation }) => {
                 to_locationLongitude,
                 packageStatus,
             };
-            await dispatch(createPackage(packageData));
+            const updateData = {
+                packageData,
+                id
+            }
+            await dispatch(updatedPackage(updateData));
             setFormData({
                 description: "",
                 height: "",
@@ -114,7 +119,8 @@ const PackageEdit = ({ currentLocation }) => {
                 packageStatus: "open",
             });
             navigate("/dashboard");
-            toast("Package added successfuly", {
+            dispatch(getPackages())
+            toast("Package updated successfuly", {
                 position: toast.POSITION.TOP_CENTER,
             });
         } catch (error) {

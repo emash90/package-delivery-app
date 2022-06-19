@@ -46,7 +46,9 @@ const createDelivery = asyncHandler(async (req, res) => {
             start_time: req.body.start_time,
             end_time: req.body.end_time,
             status: req.body.status,
-            deliveryLocation: req.body.deliveryLocation,
+            packageDescription: req.body.packageDescription,
+            packageTo: req.body.packageTo,
+            packageFrom: req.body.packageFrom
         });
         console.log(req.body);
         newDelivery.save();

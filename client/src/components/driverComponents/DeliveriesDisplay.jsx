@@ -12,15 +12,15 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { toast } from 'react-toastify'
 import {
-    getPackages,
-    deletePackage,
+    getDeliveries,
+    deleteDelivery,
     reset,
-} from "../../features/packages/packageSlice";
+} from "../../features/delivery/deliverySlice";
 import SpinnerComponent from "../SpinnerComponent";
 
-function PackageDisplay({
+function DeliveriesDisplay({
     user,
-    packages,
+    deliveries,
     isError,
     isLoading,
     isSuccess,
@@ -49,20 +49,22 @@ function PackageDisplay({
     function createData(
         packageid,
         packageDescription,
-        packageFrom,
-        packageTo,
-        packageStatus,
-        packageDetails,
-        deletePackage
+        start_time,
+        pickup_time,
+        end_time,
+        status,
+        delivery_details,
+        deleteDelivery
     ) {
         return {
             packageid,
             packageDescription,
-            packageFrom,
-            packageTo,
-            packageStatus,
-            packageDetails,
-            deletePackage,
+            start_time,
+            pickup_time,
+            end_time,
+            status,
+            delivery_details,
+            deleteDelivery
         };
     }
     const [tableData, setTableData] = useState([]);
@@ -74,20 +76,17 @@ function PackageDisplay({
         if (isError) {
             console.log(message);
         }
-        if (!user) {
-            navigate("/login");
-        }
-        dispatch(getPackages());
-        setTableData(packages);
+        dispatch(getDeliveries());
+        setTableData(deliveries);
         return () => {
             dispatch(reset());
         };
     }, [user]);
     const handleDelete = async (id) => {
         if (window.confirm("are you sure you want to delete the package?")) {
-            await dispatch(deletePackage(id));
+            await dispatch(deleteDelivery(id));
 
-            dispatch(getPackages());
+            dispatch(getDeliveries());
             toast('delete successfull', {
                 position: toast.POSITION.TOP_CENTER,
             })
@@ -99,29 +98,29 @@ function PackageDisplay({
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
-    const renderPackageStatus = (pack) => {
-        if (pack.packageStatus === "open") {
+    const renderDeliveryStatus = (delivery) => {
+        if (delivery === "picked up") {
             return (
                 <Button style={{ width: "100px" }} variant="primary">
-                    {pack.packageStatus}
+                    {delivery}
                 </Button>
             );
-        } else if (pack.packageStatus === "failed") {
+        } else if (delivery === "failed") {
             return (
                 <Button style={{ width: "100px" }} variant="danger">
-                    {pack.packageStatus}
+                    {delivery}
                 </Button>
             );
-        } else if (pack.packageStatus === "intransit") {
+        } else if (delivery === "in transit") {
             return (
                 <Button style={{ width: "100px" }} variant="secondary">
-                    {pack.packageStatus}
+                    {delivery}
                 </Button>
             );
         } else {
             return (
                 <Button style={{ width: "100px" }} variant="success">
-                    {pack.packageStatus}
+                    {delivery}
                 </Button>
             );
         }
@@ -142,22 +141,22 @@ function PackageDisplay({
                         <TableRow>
                             <StyledTableCell>#</StyledTableCell>
                             <StyledTableCell>
-                                Package description
+                                package
                             </StyledTableCell>
                             <StyledTableCell align="right">
-                                Sender
+                                package from
                             </StyledTableCell>
                             <StyledTableCell align="right">
                                 Package To
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                Package Id
+                                Package delivery time
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                Package Status
+                                delivery Status
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                package details
+                                delivery details
                             </StyledTableCell>
                             <StyledTableCell align="right">
                                 package edit
@@ -168,31 +167,31 @@ function PackageDisplay({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {packages.length > 0 ? (
-                            packages.map((pack, i) => (
-                                <StyledTableRow key={pack._id}>
+                        {deliveries.length > 0 ? (
+                            deliveries.map((delivery, i) => (
+                                <StyledTableRow key={delivery._id}>
                                     <StyledTableCell component="th" scope="row">
                                         {i + 1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {pack.description}
+                                        {delivery.packageDescription}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack.from_name}
+                                        {delivery.packageFrom}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack.to_name}
+                                        {delivery.packageTo}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack._id}
+                                        {new Date(delivery.end_time).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {renderPackageStatus(pack)}
+                                        {renderDeliveryStatus(delivery.status)}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
-                                                handleDetails(pack._id)
+                                                handleDetails(delivery._id)
                                             }
                                             variant="outline-primary"
                                         >
@@ -201,7 +200,7 @@ function PackageDisplay({
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <Button
-                                            onClick={() => handleEdit(pack._id)}
+                                            onClick={() => handleEdit(delivery._id)}
                                             variant="outline-secondary"
                                         >
                                             <i
@@ -213,7 +212,7 @@ function PackageDisplay({
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
-                                                handleDelete(pack._id)
+                                                handleDelete(delivery._id)
                                             }
                                             variant="outline-danger"
                                         >
@@ -227,7 +226,7 @@ function PackageDisplay({
                             ))
                         ) : (
                             <div>
-                                <h3>You have no packages yet</h3>
+                                <h3>You have no deliveries set yet</h3>
                             </div>
                         )}
                     </TableBody>
@@ -237,4 +236,4 @@ function PackageDisplay({
     );
 }
 
-export default PackageDisplay;
+export default DeliveriesDisplay;

@@ -42,10 +42,10 @@ function LoginPage() {
 
         if (isSuccess) {
             if (user.userType === "client") {
-                toast("welcome client", {
+                navigate("/dashboard");
+                toast(`welcome ${user.name}`, {
                     position: toast.POSITION.TOP_CENTER
                 });
-                navigate("/dashboard");
             } else if(user.userType === 'driver') {
                 toast("welcome driver", {
                     position: toast.POSITION.TOP_CENTER

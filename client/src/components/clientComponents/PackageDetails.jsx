@@ -34,13 +34,17 @@ function PackageDetails({ user }) {
             navigate("/dashboard");
 
             dispatch(getPackages());
-            toast("package delete successful");
+            toast("package delete successful", {
+              position: toast.POSITION.TOP_CENTER,
+            });
         }
     };
     const handleEdit = (id) => {
         navigate(`/dashboard/edit/${id}`);
     };
-
+    const handleDeliver = (id) => {
+      navigate(`/driverdashboard/createdelivery/${id}`)
+    }
     const bull = (
         <Box
             component="span"
@@ -111,6 +115,8 @@ function PackageDetails({ user }) {
                             </Typography>
                         </CardContent>
                         <CardActions>
+                          {user.userType === 'client' ? (
+                            <>
                             <Button
                                 variant="outline-primary"
                                 onClick={goHome}
@@ -131,6 +137,26 @@ function PackageDetails({ user }) {
                             >
                                 Delete Package
                             </Button>
+                            </>
+                          ) : (
+                            <>
+                            <Button
+                            variant="outline-primary"
+                            onClick={()=> navigate('/driverdashboard')}
+                            size="large"
+                        >
+                            Home
+                        </Button>
+                        <Button
+                        variant="outline-secondary"
+                                onClick={() => handleDeliver(onePackage._id)}
+                                size="small"
+                            >
+                                Deliver Package
+                        </Button>
+                        </>
+                          )}
+                            
                         </CardActions>
                     </React.Fragment>
                 </Col>

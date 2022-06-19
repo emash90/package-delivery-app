@@ -4,6 +4,7 @@ import packageService from "./packageService";
 const initialState = {
     packages: [],
     onePackage: [],
+    allPackages: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -88,10 +89,11 @@ export const getOnePackage = createAsyncThunk(
 //update package
 export const updatedPackage = createAsyncThunk(
     "packages/updateOne",
-    async (id, thunkAPI) => {
+    async (updateData, thunkAPI) => {
         try {
+            console.log(updateData);
             const token = thunkAPI.getState().auth.user.token;
-            return await packageService.updatedPackage(id, token);
+            return await packageService.updatedPackage(updateData, token);
         } catch (error) {
             const message =
                 (error.response &&
@@ -154,7 +156,7 @@ export const packageSlice = createSlice({
             .addCase(getAllPackages.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.packages = action.payload;
+                state.allPackages = action.payload;
             })
             .addCase(getAllPackages.rejected, (state, action) => {
                 state.isLoading = false;
@@ -193,7 +195,8 @@ export const packageSlice = createSlice({
             .addCase(updatedPackage.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.packages = action.payload;
+                state.packages = state.packages.map((pack, i) => pack._id === action.payload._id ? state.packages.replace(pack[i], action.payload) : state.packages
+                );
             })
             .addCase(updatedPackage.rejected, (state, action) => {
                 state.isLoading = false;

@@ -20,10 +20,18 @@ import SpinnerComponent from "../SpinnerComponent";
 const PackageCreate = ({ currentLocation }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+console.log(currentLocation);
+const [fromLocation, setFromLocation] = useState({lat: '', long: ''})
+useEffect(() => {
+        if (currentLocation) {
+            setFromLocation({lat: currentLocation.lat, long: currentLocation})
+    }}, [currentLocation]);
     const { isError, Message, isLoading, isSuccess } = useSelector(
         (state) => state.packages
     );
+    const handleGoBack = () => {
+        navigate("/dashboard")
+    }
     const [formData, setFormData] = useState({
         description: "",
         height: "",
@@ -210,7 +218,7 @@ const PackageCreate = ({ currentLocation }) => {
                             label="sender's location latitude"
                             type="number"
                             name="from_locationLatitude"
-                            value={currentLocation.lat}
+                            value={from_locationLatitude}
                             onChange={onChange}
                         />
                         <TextField
@@ -218,7 +226,7 @@ const PackageCreate = ({ currentLocation }) => {
                             label="sender's location longitude"
                             type="number"
                             name="from_locationLongitude"
-                            value={currentLocation.long}
+                            value={from_locationLongitude}
                             onChange={onChange}
                             style={{ marginRight: "3.5rem" }}
                         />
@@ -250,6 +258,7 @@ const PackageCreate = ({ currentLocation }) => {
                         Submit
                     </Button>
                     <Button
+                        onClick={handleGoBack}
                         style={{ width: "40%" }}
                         variant="contained"
                         color="secondary"

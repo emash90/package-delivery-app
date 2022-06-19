@@ -15,10 +15,16 @@ function Dashboard({ user, packages, isError, isSuccess, message, isLoading }) {
    const [myPackages, setMyPackages] = useState([])
    const [myPackagesPerPage, setMyPackagesPerPage] = useState(10)
    const [currentPage, setCurrentPage] = useState(1)
+   const [currentLocation, setCurrentLocation] = useState({lat: '', long: ''})
    const indexOfLastPackage = currentPage * myPackagesPerPage
    const indexOfFirstPackage = indexOfLastPackage - myPackagesPerPage
    const currentPackage = packages.slice(indexOfFirstPackage, indexOfLastPackage)
-   
+  useEffect(()=> { 
+   navigator.geolocation.getCurrentPosition((position) => {
+    setCurrentLocation({lat: position.coords.latitude, long: position.coords.longitude});
+  });
+},[])
+
    const paginate = (pageNumber) => {
      setCurrentPage(pageNumber)
    }
@@ -42,9 +48,9 @@ function Dashboard({ user, packages, isError, isSuccess, message, isLoading }) {
                             } />
                             <Route
                                 path="/createpackage"
-                                element={<PackageCreate />}
+                                element={<PackageCreate currentLocation={currentLocation} />}
                             />
-                            <Route path="/view/:id" element={<PackageDetails />} />
+                            <Route path="/view/:id" element={<PackageDetails user={user} />} />
                             <Route path="/edit/:id" element={<PackageEdit />} />
 
                         </Routes>
