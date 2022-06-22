@@ -10,15 +10,17 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { toast } from 'react-toastify'
-import {
-    getAllPackages,
-    reset,
-} from "../../features/packages/packageSlice";
+import { toast } from "react-toastify";
+import { getAllPackages, reset } from "../../features/packages/packageSlice";
 import SpinnerComponent from "../SpinnerComponent";
 
 function AllPackagesDisplay({
-    user, allPackages, isSuccess, isError, message, isLoading
+    user,
+    allPackages,
+    isSuccess,
+    isError,
+    message,
+    isLoading,
 }) {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -71,7 +73,7 @@ function AllPackagesDisplay({
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
-    
+
     if (isLoading) {
         return <SpinnerComponent />;
     }
@@ -92,9 +94,7 @@ function AllPackagesDisplay({
                             <StyledTableCell align="center">
                                 From
                             </StyledTableCell>
-                            <StyledTableCell align="center">
-                                To
-                            </StyledTableCell>
+                            <StyledTableCell align="center">To</StyledTableCell>
                             <StyledTableCell align="right">
                                 Package Creator
                             </StyledTableCell>
@@ -136,7 +136,7 @@ function AllPackagesDisplay({
                             ))
                         ) : (
                             <div>
-                                <h3>You have no packages yet</h3>
+                                <h3>There are no packages to display</h3>
                             </div>
                         )}
                     </TableBody>

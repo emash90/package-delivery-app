@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 import SpinnerComponent from "../SpinnerComponent";
 
-
 const PackageEdit = ({ currentLocation }) => {
     const { id } = useParams();
     const dispatch = useDispatch();
@@ -34,7 +33,7 @@ const PackageEdit = ({ currentLocation }) => {
     const { isError, Message, isLoading, isSuccess, onePackage } = useSelector(
         (state) => state.packages
     );
-   
+
     const [formData, setFormData] = useState({
         description: onePackage.description,
         height: "",
@@ -99,8 +98,8 @@ const PackageEdit = ({ currentLocation }) => {
             };
             const updateData = {
                 packageData,
-                id
-            }
+                id,
+            };
             await dispatch(updatedPackage(updateData));
             setFormData({
                 description: "",
@@ -121,7 +120,7 @@ const PackageEdit = ({ currentLocation }) => {
                 packageStatus: "open",
             });
             navigate("/dashboard");
-            dispatch(getPackages())
+            dispatch(getPackages());
             toast("Package updated successfuly", {
                 position: toast.POSITION.TOP_CENTER,
             });

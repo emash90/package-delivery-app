@@ -10,16 +10,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { toast } from 'react-toastify'
+import { toast } from "react-toastify";
 import {
     getPackages,
     deletePackage,
     reset,
 } from "../../features/packages/packageSlice";
 import SpinnerComponent from "../SpinnerComponent";
-import io from "socket.io-client"
+import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:5050")
+const socket = io.connect("http://localhost:5050");
 
 function PackageDisplay({
     user,
@@ -88,17 +88,17 @@ function PackageDisplay({
     }, [user]);
     useEffect(() => {
         socket.on("received status", (data) => {
-            alert(data.message)
-        })
-    }, [socket])
+            alert(data.message);
+        });
+    }, [socket]);
     const handleDelete = async (id) => {
         if (window.confirm("are you sure you want to delete the package?")) {
             await dispatch(deletePackage(id));
 
             dispatch(getPackages());
-            toast('delete successfull', {
+            toast("delete successfull", {
                 position: toast.POSITION.TOP_CENTER,
-            })
+            });
         }
     };
     const handleEdit = (id) => {

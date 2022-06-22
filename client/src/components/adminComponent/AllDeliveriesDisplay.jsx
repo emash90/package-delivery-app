@@ -10,13 +10,18 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { toast } from 'react-toastify'
+import { toast } from "react-toastify";
 
 import SpinnerComponent from "../SpinnerComponent";
 import { getAllDeliveries, reset } from "../../features/delivery/deliverySlice";
 
 function AllDeliveriesDisplay({
-    user, allDeliveries, isSuccess, isError, message, isLoading
+    user,
+    allDeliveries,
+    isSuccess,
+    isError,
+    message,
+    isLoading,
 }) {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -54,7 +59,7 @@ function AllDeliveriesDisplay({
         };
     }
     const [tableData, setTableData] = useState([]);
-console.log(allDeliveries);
+    console.log(allDeliveries);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     useEffect(() => {
@@ -66,7 +71,7 @@ console.log(allDeliveries);
     const handleDetails = (deliveryId) => {
         navigate(`/dashboard/view/${deliveryId}`);
     };
-    
+
     if (isLoading) {
         return <SpinnerComponent />;
     }
@@ -81,9 +86,7 @@ console.log(allDeliveries);
                     <TableHead>
                         <TableRow>
                             <StyledTableCell>#</StyledTableCell>
-                            <StyledTableCell>
-                                Delivery for
-                            </StyledTableCell>
+                            <StyledTableCell>Delivery for</StyledTableCell>
                             <StyledTableCell align="center">
                                 Delivery Status
                             </StyledTableCell>
@@ -99,7 +102,7 @@ console.log(allDeliveries);
                             <StyledTableCell align="center">
                                 Delivery End_time
                             </StyledTableCell>
-                           
+
                             <StyledTableCell align="center">
                                 More Details
                             </StyledTableCell>
@@ -125,12 +128,16 @@ console.log(allDeliveries);
                                         {delivery.packageTo}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {new Date(delivery.start_time).toLocaleDateString()}
+                                        {new Date(
+                                            delivery.start_time
+                                        ).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {new Date(delivery.end_time).toLocaleDateString()}
+                                        {new Date(
+                                            delivery.end_time
+                                        ).toLocaleDateString()}
                                     </StyledTableCell>
-                           
+
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
@@ -145,7 +152,7 @@ console.log(allDeliveries);
                             ))
                         ) : (
                             <div>
-                                <h3>You have no packages yet</h3>
+                                <h3>There are no deliveries to display</h3>
                             </div>
                         )}
                     </TableBody>

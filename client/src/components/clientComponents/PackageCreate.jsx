@@ -16,28 +16,36 @@ import {
     Button,
 } from "@mui/material";
 import SpinnerComponent from "../SpinnerComponent";
-import { useJsApiLoader, GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
-
+import {
+    useJsApiLoader,
+    GoogleMap,
+    Marker,
+    Autocomplete,
+} from "@react-google-maps/api";
 
 const PackageCreate = ({ currentLocation }) => {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        libraries: ['places']
+        libraries: ["places"],
     });
     const dispatch = useDispatch();
     const navigate = useNavigate();
-console.log(currentLocation);
-const [fromLocation, setFromLocation] = useState({lat: '', long: ''})
-useEffect(() => {
+    console.log(currentLocation);
+    const [fromLocation, setFromLocation] = useState({ lat: "", long: "" });
+    useEffect(() => {
         if (currentLocation) {
-            setFromLocation({lat: currentLocation.lat, long: currentLocation})
-    }}, [currentLocation]);
+            setFromLocation({
+                lat: currentLocation.lat,
+                long: currentLocation,
+            });
+        }
+    }, [currentLocation]);
     const { isError, Message, isLoading, isSuccess } = useSelector(
         (state) => state.packages
     );
     const handleGoBack = () => {
-        navigate("/dashboard")
-    }
+        navigate("/dashboard");
+    };
     const [formData, setFormData] = useState({
         description: "",
         height: "",
@@ -161,26 +169,26 @@ useEffect(() => {
                         />
                     </Grid>
                     <Autocomplete>
-                    <Grid item mb={3} lg>
-                        <TextField
-                            id="packageFromAddress"
-                            label="sender's address"
-                            type="text"
-                            name="from_address"
-                            value={from_address}
-                            onChange={onChange}
-                            style={{ width: "45%", marginRight: "22px" }}
-                        />
-                        <TextField
-                            id="packageToAddress"
-                            label="receiver's address"
-                            type="text"
-                            name="to_address"
-                            value={to_address}
-                            onChange={onChange}
-                            style={{ width: "45%" }}
-                        />
-                    </Grid>
+                        <Grid item mb={3} lg>
+                            <TextField
+                                id="packageFromAddress"
+                                label="sender's address"
+                                type="text"
+                                name="from_address"
+                                value={from_address}
+                                onChange={onChange}
+                                style={{ width: "45%", marginRight: "22px" }}
+                            />
+                            <TextField
+                                id="packageToAddress"
+                                label="receiver's address"
+                                type="text"
+                                name="to_address"
+                                value={to_address}
+                                onChange={onChange}
+                                style={{ width: "45%" }}
+                            />
+                        </Grid>
                     </Autocomplete>
 
                     <Grid item mb={3}>

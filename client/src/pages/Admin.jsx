@@ -32,6 +32,10 @@ function Admin({
         indexOfFirstPackage,
         indexOfLastPackage
     );
+    const currentUsers = allUsers.slice(
+        indexOfFirstPackage,
+        indexOfLastPackage
+    );
 
     const openPackages = allPackages.filter(
         (pack) => pack.packageStatus === "open"
@@ -117,21 +121,31 @@ function Admin({
                             <Route
                                 path="/users"
                                 element={
+                                    <>
                                     <AllUsersDisplay
                                         message={message}
                                         user={user}
-                                        allUsers={allUsers}
+                                        allUsers={currentUsers}
                                         isError={isError}
                                         isLoading={isLoading}
                                         isSuccess={isSuccess}
                                     />
+                                    <Pagination
+                                    myPackagesPerPage={
+                                        myPackagesPerPage
+                                    }
+                                    totalPackages={allUsers.length}
+                                    paginate={paginate}
+                                />
+                                </>
                                 }
                             />
                             <Route
                                 path="/deliveries"
                                 element={
+                                    <>
                                     <AllDeliveriesDisplay
-                                        allDeliveries={allDeliveries}
+                                        allDeliveries={currentDeliveries}
                                         oneDelivery={oneDelivery}
                                         message={message}
                                         user={user}
@@ -139,6 +153,14 @@ function Admin({
                                         isLoading={isLoading}
                                         isSuccess={isSuccess}
                                     />
+                                    <Pagination
+                                    myPackagesPerPage={
+                                        myPackagesPerPage
+                                    }
+                                    totalPackages={allDeliveries.length}
+                                    paginate={paginate}
+                                />
+                                </>
                                 }
                             />
                         </Routes>

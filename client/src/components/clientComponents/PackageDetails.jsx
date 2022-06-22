@@ -17,10 +17,8 @@ import {
 import { toast } from "react-toastify";
 import MapComponent from "../MapComponent";
 
-
 function PackageDetails({ user }) {
- 
-    const  onePackage  = useSelector((state) => state.packages.onePackage);
+    const onePackage = useSelector((state) => state.packages.onePackage);
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -38,7 +36,7 @@ function PackageDetails({ user }) {
 
             dispatch(getPackages());
             toast("package delete successful", {
-              position: toast.POSITION.TOP_CENTER,
+                position: toast.POSITION.TOP_CENTER,
             });
         }
     };
@@ -46,8 +44,8 @@ function PackageDetails({ user }) {
         navigate(`/dashboard/edit/${id}`);
     };
     const handleDeliver = (id) => {
-      navigate(`/driverdashboard/createdelivery/${id}`)
-    }
+        navigate(`/driverdashboard/createdelivery/${id}`);
+    };
     const bull = (
         <Box
             component="span"
@@ -121,54 +119,61 @@ function PackageDetails({ user }) {
                             </Typography>
                         </CardContent>
                         <CardActions>
-                          {user.userType === 'client' ? (
-                            <>
-                            <Button
-                                variant="outline-primary"
-                                onClick={goHome}
-                                size="large"
-                            >
-                                Home
-                            </Button>
-                            <Button
-                                variant="outline-secondary"
-                                onClick={() => handleEdit(onePackage._id)}
-                                size="small"
-                            >
-                                Edit Package
-                            </Button>
-                            <Button
-                                variant="outline-danger"
-                                onClick={() => handleDelete(onePackage._id)}
-                            >
-                                Delete Package
-                            </Button>
-                            </>
-                          ) : (
-                            <>
-                            <Button
-                            variant="outline-primary"
-                            onClick={()=> navigate('/driverdashboard')}
-                            size="large"
-                        >
-                            Home
-                        </Button>
-                        <Button
-                        variant="outline-secondary"
-                                onClick={() => handleDeliver(onePackage._id)}
-                                size="small"
-                            >
-                                Deliver Package
-                        </Button>
-                        </>
-                          )}
-                            
+                            {user.userType === "client" ? (
+                                <>
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={goHome}
+                                        size="large"
+                                    >
+                                        Home
+                                    </Button>
+                                    <Button
+                                        variant="outline-secondary"
+                                        onClick={() =>
+                                            handleEdit(onePackage._id)
+                                        }
+                                        size="small"
+                                    >
+                                        Edit Package
+                                    </Button>
+                                    <Button
+                                        variant="outline-danger"
+                                        onClick={() =>
+                                            handleDelete(onePackage._id)
+                                        }
+                                    >
+                                        Delete Package
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={() =>
+                                            navigate("/driverdashboard")
+                                        }
+                                        size="large"
+                                    >
+                                        Home
+                                    </Button>
+                                    <Button
+                                        variant="outline-secondary"
+                                        onClick={() =>
+                                            handleDeliver(onePackage._id)
+                                        }
+                                        size="small"
+                                    >
+                                        Deliver Package
+                                    </Button>
+                                </>
+                            )}
                         </CardActions>
                     </React.Fragment>
                 </Col>
                 <Col>
                     <div>
-                      <MapComponent onePackage={onePackage} />
+                        <MapComponent onePackage={onePackage} />
                     </div>
                 </Col>
             </Row>

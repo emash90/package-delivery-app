@@ -11,7 +11,7 @@ const deliverySchema = new mongoose.Schema(
         },
         packageDescription: {
             type: String,
-            required: true
+            required: true,
         },
         packageId: {
             type: String,

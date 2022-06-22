@@ -10,16 +10,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { toast } from 'react-toastify'
-import {
-    getAllPackages,
-    reset,
-} from "../../features/packages/packageSlice";
+import { toast } from "react-toastify";
+import { getAllPackages, reset } from "../../features/packages/packageSlice";
 import SpinnerComponent from "../SpinnerComponent";
 import { getAllUsers } from "../../features/auth/authSlice";
 
 function AllUsersDisplay({
-    user, allUsers, allPackages, isSuccess, isError, message, isLoading
+    user,
+    allUsers,
+    allPackages,
+    isSuccess,
+    isError,
+    message,
+    isLoading,
 }) {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -72,7 +75,7 @@ function AllUsersDisplay({
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
-    
+
     if (isLoading) {
         return <SpinnerComponent />;
     }
@@ -87,9 +90,7 @@ function AllUsersDisplay({
                     <TableHead>
                         <TableRow>
                             <StyledTableCell>#</StyledTableCell>
-                            <StyledTableCell>
-                                User FirstName
-                            </StyledTableCell>
+                            <StyledTableCell>User FirstName</StyledTableCell>
                             <StyledTableCell align="center">
                                 User LastName
                             </StyledTableCell>
@@ -127,7 +128,9 @@ function AllUsersDisplay({
                                         {user.accountType}
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
-                                        {new Date(user.createdAt).toLocaleDateString()}
+                                        {new Date(
+                                            user.createdAt
+                                        ).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <Button
@@ -143,7 +146,7 @@ function AllUsersDisplay({
                             ))
                         ) : (
                             <div>
-                                <h3>You have no packages yet</h3>
+                                <h3>There are 0 users</h3>
                             </div>
                         )}
                     </TableBody>
