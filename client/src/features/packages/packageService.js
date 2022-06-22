@@ -59,7 +59,7 @@ const updatedPackage = async (updateData, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.patch(API_URL + id, packageData, config);
+    const response = await axios.patch(API_URL + id, packageData);
 
     return response.data;
 };

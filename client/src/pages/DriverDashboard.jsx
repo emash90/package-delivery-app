@@ -8,16 +8,20 @@ import DeliveriesDisplay from "../components/driverComponents/DeliveriesDisplay"
 import PackageDetails from "../components/clientComponents/PackageDetails";
 import DeliveryForm from '../components/driverComponents/DeliveryForm'
 import AvailablePackages from '../components/driverComponents/AvailablePackages'
+import DeliveryEdit from '../components/driverComponents/DeliveryEdit'
 
-function DriverDashboard({ user, allPackages, onePackage, deliveries, isError, isSuccess, message, isLoading }) {
+function DriverDashboard({ user, allPackages, onePackage, oneDelivery, deliveries, isError, isSuccess, message, isLoading }) {
 
    //paginating the packages
    const [myPackages, setMyPackages] = useState([])
    const [myPackagesPerPage, setMyPackagesPerPage] = useState(8)
    const [currentPage, setCurrentPage] = useState(1)
    const indexOfLastPackage = currentPage * myPackagesPerPage
+
+   const openPackages = allPackages.filter((pack) => pack.packageStatus === "open");
    const indexOfFirstPackage = indexOfLastPackage - myPackagesPerPage
-   const currentPackage = allPackages.slice(indexOfFirstPackage, indexOfLastPackage)
+   const currentPackage = openPackages.slice(indexOfFirstPackage, indexOfLastPackage)
+   const currentDeliveries = deliveries.slice(indexOfFirstPackage, indexOfLastPackage)
   
 
    const paginate = (pageNumber) => {
@@ -47,9 +51,15 @@ function DriverDashboard({ user, allPackages, onePackage, deliveries, isError, i
                             />
                             <Route
                                 path="/mydeliveries"
-                                element={<DeliveriesDisplay deliveries={deliveries} />}
+                                element={
+                                    <>
+                                <DeliveriesDisplay deliveries={currentDeliveries} />
+                                <Pagination myPackagesPerPage={myPackagesPerPage} totalPackages={deliveries.length} paginate={paginate}/>
+                                </>
+                                }
                             />
                             <Route path="/view/:id" element={<PackageDetails />} />
+                            <Route path="/edit/:id" element={<DeliveryEdit onePackage={onePackage} oneDelivery={oneDelivery} />} />
 
                         </Routes>
                     </Col>

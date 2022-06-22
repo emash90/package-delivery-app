@@ -74,20 +74,17 @@ const updatePackage = asyncHandler(async (req, res) => {
         const userId = req.params.id;
         const packageToUpdate = await Package.findById(userId);
         if (!packageToUpdate) {
-            res.status(400);
-            throw new Error("cannot find package with that id");
+            return res.status(401).json("cannot find package with that id");
         }
-        const user = await User.findById(req.user.id);
-        //check for user
-        if (!user) {
-            res.status(400);
-            throw new Error("User not found");
-        }
-        //ensure user only updates own goals
-        if (packageToUpdate.user_id.toString() !== user.id) {
-            res.status(400);
-            throw new Error("User not authorised");
-        }
+        // const user = await User.findById(req.user.id);
+        // //check for user
+        // if (!user) {
+        //     return res.status(400).json("User not found");
+        // }
+        // //ensure user only updates own goals
+        // if (packageToUpdate.user_id.toString() !== user.id) {
+        //     return res.status(400).json("User not authorised");
+        // }
         const updatedPackage = await Package.findByIdAndUpdate(
             { _id: packageToUpdate.id },
             req.body,

@@ -15,7 +15,7 @@ router.route("/").get(protect, getPackage).post(protect, createPackage);
 router
     .route("/:id")
     .get(protect, getOnePackage)
-    .patch(protect, updatePackage)
+    .patch(updatePackage)
     .delete(protect, deletePackage);
 
 module.exports = router;

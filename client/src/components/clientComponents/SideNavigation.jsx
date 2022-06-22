@@ -35,14 +35,18 @@ function SideNavigation() {
         }else {
             return (
                 <Nav>
-                <LinkContainer to={"/dashboard"} style={{color: 'black'}}>
-                    <Nav.Link >my packages</Nav.Link>
+                <LinkContainer to={"/admin"} style={{color: 'black'}}>
+                    <Nav.Link >all packages</Nav.Link>
                 </LinkContainer>
 
-                <LinkContainer to={"/dashboard/createpackage"} style={{color: 'black'}}>
-                    <Nav.Link>create package</Nav.Link>
+                
+                <LinkContainer to={"/admin/deliveries"} style={{color: 'black'}}>
+                    <Nav.Link>all deliveries</Nav.Link>
                 </LinkContainer>
 
+                <LinkContainer to={"/admin/users"} style={{color: 'black'}}>
+                    <Nav.Link>all users</Nav.Link>
+                </LinkContainer>
             </Nav>
             )
         }

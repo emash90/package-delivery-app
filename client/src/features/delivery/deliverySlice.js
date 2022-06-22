@@ -4,6 +4,7 @@ import deliveryService from "./deliveryService";
 const initialState = {
     allDeliveries: [],
     deliveries: [],
+    oneDelivery: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -89,10 +90,10 @@ export const getOneDelivery = createAsyncThunk(
 //update delivery
 export const updatedDelivery = createAsyncThunk(
     "deliveries/updateOne",
-    async (id, thunkAPI) => {
+    async (deliveryDataObj, thunkAPI) => {
         try {
             const token = thunkAPI.getState().auth.user.token;
-            return await deliveryService.updatedDelivery(id, token);
+            return await deliveryService.updatedDelivery(deliveryDataObj, token);
         } catch (error) {
             const message =
                 (error.response &&
@@ -181,7 +182,7 @@ export const deliverySlice = createSlice({
             .addCase(getOneDelivery.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.deliveries = action.payload;
+                state.oneDelivery = action.payload;
             })
             .addCase(getOneDelivery.rejected, (state, action) => {
                 state.isLoading = false;
@@ -194,7 +195,8 @@ export const deliverySlice = createSlice({
             .addCase(updatedDelivery.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.deliveries = action.payload;
+                state.deliveries = state.deliveries.map((delivery, i) => delivery._id === action.payload._id ? state.deliveries.replace(delivery[i], action.payload) : state.deliveries
+                );;
             })
             .addCase(updatedDelivery.rejected, (state, action) => {
                 state.isLoading = false;

@@ -93,7 +93,7 @@ export const updatedPackage = createAsyncThunk(
         try {
             console.log(updateData);
             const token = thunkAPI.getState().auth.user.token;
-            return await packageService.updatedPackage(updateData, token);
+            return await packageService.updatedPackage(updateData);
         } catch (error) {
             const message =
                 (error.response &&

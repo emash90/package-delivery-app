@@ -16,11 +16,11 @@ import {
     reset,
 } from "../../features/packages/packageSlice";
 import SpinnerComponent from "../SpinnerComponent";
+import { getAllUsers } from "../../features/auth/authSlice";
 
-function AvailablePackages({
-    user, allPackages, isSuccess, isError, message, isLoading
+function AllUsersDisplay({
+    user, allUsers, allPackages, isSuccess, isError, message, isLoading
 }) {
-    const availablePackages = allPackages.filter((pack) => pack.packageStatus === 'open')
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
             backgroundColor: theme.palette.secondary.dark,
@@ -64,8 +64,7 @@ function AvailablePackages({
         if (isError) {
             console.log(message);
         }
-        dispatch(getAllPackages());
-        setTableData(availablePackages);
+        dispatch(getAllUsers());
         return () => {
             dispatch(reset());
         };
@@ -79,7 +78,6 @@ function AvailablePackages({
     }
     return (
         <div className="display-table">
-            <h2>Available Packages</h2>
             <TableContainer component={Paper} style={{ width: 1050 }}>
                 <Table
                     size="medium"
@@ -90,45 +88,51 @@ function AvailablePackages({
                         <TableRow>
                             <StyledTableCell>#</StyledTableCell>
                             <StyledTableCell>
-                                Package Description
+                                User FirstName
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                From
+                                User LastName
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                To
+                                User Email
                             </StyledTableCell>
                             <StyledTableCell align="right">
-                                Package Creator
+                                User Type
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                More Details
+                                Account Created on
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                                More details
                             </StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {availablePackages.length > 0 ? (
-                            availablePackages.map((pack, i) => (
-                                <StyledTableRow key={pack._id}>
+                        {allUsers.length > 0 ? (
+                            allUsers.map((user, i) => (
+                                <StyledTableRow key={user._id}>
                                     <StyledTableCell component="th" scope="row">
                                         {i + 1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {pack.description}
+                                        {user.firstName}
                                     </StyledTableCell>
-                                    <StyledTableCell align="right">
-                                        {pack.from_address}
+                                    <StyledTableCell component="th" scope="row">
+                                        {user.lastName}
                                     </StyledTableCell>
-                                    <StyledTableCell align="right">
-                                        {pack.to_address}
+                                    <StyledTableCell align="center">
+                                        {user.email}
                                     </StyledTableCell>
-                                    <StyledTableCell align="right">
-                                        {pack.packageCreator}
+                                    <StyledTableCell align="center">
+                                        {user.accountType}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        {new Date(user.createdAt).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
-                                                handleDetails(pack._id)
+                                                handleDetails(user._id)
                                             }
                                             variant="outline-primary"
                                         >
@@ -149,4 +153,4 @@ function AvailablePackages({
     );
 }
 
-export default AvailablePackages;
+export default AllUsersDisplay;

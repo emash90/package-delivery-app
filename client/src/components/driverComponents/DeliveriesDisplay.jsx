@@ -93,13 +93,13 @@ function DeliveriesDisplay({
         }
     };
     const handleEdit = (id) => {
-        navigate(`/dashboard/edit/${id}`);
+        navigate(`/driverdashboard/edit/${id}`);
     };
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
     const renderDeliveryStatus = (delivery) => {
-        if (delivery === "picked up") {
+        if (delivery === "Picked Up") {
             return (
                 <Button style={{ width: "100px" }} variant="primary">
                     {delivery}
@@ -130,7 +130,7 @@ function DeliveriesDisplay({
     }
     return (
         <div className="display-table">
-            <h2>My Packages</h2>
+            <h2>My Deliveries</h2>
             <TableContainer component={Paper} style={{ width: 1050 }}>
                 <Table
                     size="medium"
@@ -153,16 +153,16 @@ function DeliveriesDisplay({
                                 Package delivery time
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                delivery Status
+                                Delivery Status
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                delivery details
+                                Delivery Details
                             </StyledTableCell>
                             <StyledTableCell align="right">
-                                package edit
+                                Delivery Edit
                             </StyledTableCell>
                             <StyledTableCell width={5} align="right">
-                                package delete
+                                Delete Delivery
                             </StyledTableCell>
                         </TableRow>
                     </TableHead>

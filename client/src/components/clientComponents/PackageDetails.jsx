@@ -15,9 +15,12 @@ import {
     getPackages,
 } from "../../features/packages/packageSlice";
 import { toast } from "react-toastify";
+import MapComponent from "../MapComponent";
+
 
 function PackageDetails({ user }) {
-    const { onePackage } = useSelector((state) => state.packages);
+ 
+    const  onePackage  = useSelector((state) => state.packages.onePackage);
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -54,7 +57,7 @@ function PackageDetails({ user }) {
     const card = (
         <Container>
             <Row>
-                <Col>
+                <Col md={4}>
                     <React.Fragment>
                         <CardContent>
                             <Typography
@@ -113,6 +116,9 @@ function PackageDetails({ user }) {
                                 {onePackage.weight}g, depth: {onePackage.depth}
                                 cm, width: {onePackage.width}cm
                             </Typography>
+                            <Typography mt={3} variant="body2">
+                                Package Status: {onePackage.packageStatus}
+                            </Typography>
                         </CardContent>
                         <CardActions>
                           {user.userType === 'client' ? (
@@ -161,7 +167,9 @@ function PackageDetails({ user }) {
                     </React.Fragment>
                 </Col>
                 <Col>
-                    <div>Goggle Map component here</div>
+                    <div>
+                      <MapComponent onePackage={onePackage} />
+                    </div>
                 </Col>
             </Row>
         </Container>

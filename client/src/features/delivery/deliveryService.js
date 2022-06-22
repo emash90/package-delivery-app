@@ -53,13 +53,15 @@ const getOneDelivery = async (deliveryID, token) => {
 };
 
 //update delivery
-const updatedDelivery = async (id, token) => {
+const updatedDelivery = async (deliveryDataObj, token) => {
+    const id = deliveryDataObj.id
+    const deliveryData = deliveryDataObj.deliveryData
     const config = await {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.patch(`${API_URL}${id}`, config);
+    const response = await axios.patch(`${API_URL}${id}`, deliveryData, config);
 
     return response.data;
 };

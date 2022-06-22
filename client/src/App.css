@@ -29,6 +29,18 @@ main {
   color: #000;
 
 }
+.package-summary-container {
+  background-color: #555;
+  color: aliceblue;
+  padding-top: 1.25rem;
+  height: 10%;
+}
+.failed-status {
+  color: red;
+}
+.google-map {
+  height: 80vh;
+}
 .page-item {
   margin-right: 0rem;
   color: aqua;

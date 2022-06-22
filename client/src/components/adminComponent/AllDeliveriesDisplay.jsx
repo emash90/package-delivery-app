@@ -11,16 +11,13 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { toast } from 'react-toastify'
-import {
-    getAllPackages,
-    reset,
-} from "../../features/packages/packageSlice";
-import SpinnerComponent from "../SpinnerComponent";
 
-function AvailablePackages({
-    user, allPackages, isSuccess, isError, message, isLoading
+import SpinnerComponent from "../SpinnerComponent";
+import { getAllDeliveries, reset } from "../../features/delivery/deliverySlice";
+
+function AllDeliveriesDisplay({
+    user, allDeliveries, isSuccess, isError, message, isLoading
 }) {
-    const availablePackages = allPackages.filter((pack) => pack.packageStatus === 'open')
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
             backgroundColor: theme.palette.secondary.dark,
@@ -57,21 +54,17 @@ function AvailablePackages({
         };
     }
     const [tableData, setTableData] = useState([]);
-
+console.log(allDeliveries);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     useEffect(() => {
-        if (isError) {
-            console.log(message);
-        }
-        dispatch(getAllPackages());
-        setTableData(availablePackages);
+        dispatch(getAllDeliveries());
         return () => {
             dispatch(reset());
         };
     }, []);
-    const handleDetails = (packageId) => {
-        navigate(`/dashboard/view/${packageId}`);
+    const handleDetails = (deliveryId) => {
+        navigate(`/dashboard/view/${deliveryId}`);
     };
     
     if (isLoading) {
@@ -79,7 +72,6 @@ function AvailablePackages({
     }
     return (
         <div className="display-table">
-            <h2>Available Packages</h2>
             <TableContainer component={Paper} style={{ width: 1050 }}>
                 <Table
                     size="medium"
@@ -90,45 +82,59 @@ function AvailablePackages({
                         <TableRow>
                             <StyledTableCell>#</StyledTableCell>
                             <StyledTableCell>
-                                Package Description
+                                Delivery for
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                From
+                                Delivery Status
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                                To
+                                Delivery From
                             </StyledTableCell>
-                            <StyledTableCell align="right">
-                                Package Creator
+                            <StyledTableCell align="center">
+                                Delivery To
                             </StyledTableCell>
+                            <StyledTableCell align="center">
+                                Delivery Start_time
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                                Delivery End_time
+                            </StyledTableCell>
+                           
                             <StyledTableCell align="center">
                                 More Details
                             </StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {availablePackages.length > 0 ? (
-                            availablePackages.map((pack, i) => (
-                                <StyledTableRow key={pack._id}>
+                        {allDeliveries.length > 0 ? (
+                            allDeliveries.map((delivery, i) => (
+                                <StyledTableRow key={delivery._id}>
                                     <StyledTableCell component="th" scope="row">
                                         {i + 1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {pack.description}
+                                        {delivery.packageDescription}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack.from_address}
+                                        {delivery.status}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack.to_address}
+                                        {delivery.packageFrom}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {pack.packageCreator}
+                                        {delivery.packageTo}
                                     </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {new Date(delivery.start_time).toLocaleDateString()}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {new Date(delivery.end_time).toLocaleDateString()}
+                                    </StyledTableCell>
+                           
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
-                                                handleDetails(pack._id)
+                                                handleDetails(delivery._id)
                                             }
                                             variant="outline-primary"
                                         >
@@ -149,4 +155,4 @@ function AvailablePackages({
     );
 }
 
-export default AvailablePackages;
+export default AllDeliveriesDisplay;

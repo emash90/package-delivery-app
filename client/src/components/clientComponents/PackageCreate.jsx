@@ -16,8 +16,14 @@ import {
     Button,
 } from "@mui/material";
 import SpinnerComponent from "../SpinnerComponent";
+import { useJsApiLoader, GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
+
 
 const PackageCreate = ({ currentLocation }) => {
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+        libraries: ['places']
+    });
     const dispatch = useDispatch();
     const navigate = useNavigate();
 console.log(currentLocation);
@@ -37,7 +43,7 @@ useEffect(() => {
         height: "",
         weight: "",
         depth: "",
-        packageStatus: "delivered",
+        packageStatus: "open",
         width: "",
         from_name: "",
         from_address: "",
@@ -154,6 +160,7 @@ useEffect(() => {
                             style={{ width: "45%" }}
                         />
                     </Grid>
+                    <Autocomplete>
                     <Grid item mb={3} lg>
                         <TextField
                             id="packageFromAddress"
@@ -174,6 +181,7 @@ useEffect(() => {
                             style={{ width: "45%" }}
                         />
                     </Grid>
+                    </Autocomplete>
 
                     <Grid item mb={3}>
                         <TextField
