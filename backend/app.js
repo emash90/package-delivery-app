@@ -22,10 +22,9 @@ io.on("connection", (socket) => {
     socket.on("statusSet", (data) => {
         console.log(data)
         socket.emit("received status", data)
+        socket.broadcast.emit("new status", data)
     })
-    socket.on('disconnect', reason => {
-        console.log('user disconnected');
-      });
+
 })
 
 app.use(morgan("dev"));

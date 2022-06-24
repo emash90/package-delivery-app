@@ -27,7 +27,11 @@ function PackageDetails({ user }) {
     }, [getOnePackage]);
 
     const goHome = () => {
-        navigate("/dashboard");
+        if(user.userType === "driver"){
+        navigate("/dashboard")
+        } else {
+            navigate("/admin")
+        }
     };
     const handleDelete = async (id) => {
         if (window.confirm("are you sure you want to delete the package?")) {
@@ -117,6 +121,9 @@ function PackageDetails({ user }) {
                             <Typography mt={3} variant="body2">
                                 Package Status: {onePackage.packageStatus}
                             </Typography>
+                            <Typography mt={3} variant="body2">
+                                Driver Email : {onePackage.driverEmail}
+                            </Typography>
                         </CardContent>
                         <CardActions>
                             {user.userType === "client" ? (
@@ -150,9 +157,7 @@ function PackageDetails({ user }) {
                                 <>
                                     <Button
                                         variant="outline-primary"
-                                        onClick={() =>
-                                            navigate("/driverdashboard")
-                                        }
+                                        onClick={goHome}
                                         size="large"
                                     >
                                         Home

@@ -7,6 +7,9 @@ import { createDelivery, getOneDelivery, updatedDelivery } from "../../features/
 import { getOnePackage } from "../../features/packages/packageSlice";
 import { Radio, Grid, TextField, Button, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
 import SpinnerComponent from '../SpinnerComponent';
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:5050");
 
 
 function DeliveryEdit({ oneDelivery, onePackage }) {
@@ -78,6 +81,7 @@ function DeliveryEdit({ oneDelivery, onePackage }) {
                 id
             }
             await dispatch(updatedDelivery(deliveryDataObj));
+            socket.emit("statusSet", {status, packageId})
             console.log(deliveryData);
             setFormData({
                 packageId: "",

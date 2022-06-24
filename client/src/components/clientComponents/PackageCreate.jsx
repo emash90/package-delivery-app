@@ -23,23 +23,22 @@ import {
     Autocomplete,
 } from "@react-google-maps/api";
 
-const PackageCreate = ({ currentLocation }) => {
+const PackageCreate = ({ }) => {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries: ["places"],
     });
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    console.log(currentLocation);
-    const [fromLocation, setFromLocation] = useState({ lat: "", long: "" });
-    useEffect(() => {
-        if (currentLocation) {
-            setFromLocation({
-                lat: currentLocation.lat,
-                long: currentLocation,
-            });
-        }
-    }, [currentLocation]);
+    // const [fromLocation, setFromLocation] = useState({ lat: "", long: "" });
+    // useEffect(() => {
+    //     if (currentLocation) {
+    //         setFromLocation({
+    //             lat: currentLocation.lat,
+    //             long: currentLocation,
+    //         });
+    //     }
+    // }, [currentLocation]);
     const { isError, Message, isLoading, isSuccess } = useSelector(
         (state) => state.packages
     );
@@ -51,6 +50,7 @@ const PackageCreate = ({ currentLocation }) => {
         height: "",
         weight: "",
         depth: "",
+        driverEmail: "NONE",
         packageStatus: "open",
         width: "",
         from_name: "",
@@ -77,6 +77,7 @@ const PackageCreate = ({ currentLocation }) => {
         to_locationLatitude,
         to_locationLongitude,
         packageStatus,
+        driverEmail,
     } = formData;
     const onChange = (e) => {
         setFormData((prevState) => ({
@@ -102,6 +103,7 @@ const PackageCreate = ({ currentLocation }) => {
                 to_locationLatitude,
                 to_locationLongitude,
                 packageStatus,
+                driverEmail,
             };
             await dispatch(createPackage(packageData));
             setFormData({
@@ -119,6 +121,7 @@ const PackageCreate = ({ currentLocation }) => {
                 to_name: "",
                 to_address: "",
                 to_locationLatitude: "",
+                driverEmail: "NONE",
                 to_locationLongitude: "",
                 packageStatus: "open",
             });
@@ -168,7 +171,7 @@ const PackageCreate = ({ currentLocation }) => {
                             style={{ width: "45%" }}
                         />
                     </Grid>
-                    <Autocomplete>
+
                         <Grid item mb={3} lg>
                             <TextField
                                 id="packageFromAddress"
@@ -189,7 +192,7 @@ const PackageCreate = ({ currentLocation }) => {
                                 style={{ width: "45%" }}
                             />
                         </Grid>
-                    </Autocomplete>
+
 
                     <Grid item mb={3}>
                         <TextField

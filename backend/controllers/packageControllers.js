@@ -43,6 +43,7 @@ const createPackage = asyncHandler(async (req, res) => {
             user_id: req.user.id,
             description: req.body.description,
             packageStatus: req.body.packageStatus,
+            driverEmail: req.body.driverEmail,
             weight: req.body.weight,
             height: req.body.height,
             width: req.body.width,

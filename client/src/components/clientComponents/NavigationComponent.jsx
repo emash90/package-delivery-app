@@ -48,7 +48,9 @@ function NavigationComponent({ user }) {
                                     </LinkContainer>
                                 </>
                             ) : (
-                                <NavDropdown
+                                <>
+                                <div className="user_title">
+                                <NavDropdown 
                                     title={user ? user.name : ""}
                                     id="basic-nav-dropdown"
                                 >
@@ -76,6 +78,8 @@ function NavigationComponent({ user }) {
                                         </Button>
                                     </NavDropdown.Item>
                                 </NavDropdown>
+                                </div>
+                                </>
                             )}
                         </Nav>
                     </Navbar.Collapse>

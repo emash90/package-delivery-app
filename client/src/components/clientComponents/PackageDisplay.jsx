@@ -86,11 +86,7 @@ function PackageDisplay({
             dispatch(reset());
         };
     }, [user]);
-    useEffect(() => {
-        socket.on("received status", (data) => {
-            alert(data.message);
-        });
-    }, [socket]);
+ 
     const handleDelete = async (id) => {
         if (window.confirm("are you sure you want to delete the package?")) {
             await dispatch(deletePackage(id));
@@ -107,6 +103,7 @@ function PackageDisplay({
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
+  
     const renderPackageStatus = (pack) => {
         if (pack.packageStatus === "open") {
             return (
@@ -120,7 +117,7 @@ function PackageDisplay({
                     {pack.packageStatus}
                 </Button>
             );
-        } else if (pack.packageStatus === "intransit") {
+        } else if (pack.packageStatus === "in transit") {
             return (
                 <Button style={{ width: "100px" }} variant="secondary">
                     {pack.packageStatus}
@@ -134,6 +131,12 @@ function PackageDisplay({
             );
         }
     };
+    useEffect(() => {
+        socket.on('new status', (data) => {
+            console.log(`package event sent from server ${data.packageId}`)
+            dispatch(getPackages())
+        })
+    }, [socket])
     if (isLoading) {
         return <SpinnerComponent />;
     }

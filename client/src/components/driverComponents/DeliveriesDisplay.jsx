@@ -17,6 +17,9 @@ import {
     reset,
 } from "../../features/delivery/deliverySlice";
 import SpinnerComponent from "../SpinnerComponent";
+import  axios  from "axios";
+import { getOnePackage } from "../../features/packages/packageSlice";
+
 
 function DeliveriesDisplay({
     user,
@@ -82,21 +85,37 @@ function DeliveriesDisplay({
             dispatch(reset());
         };
     }, [user]);
-    const handleDelete = async (id) => {
-        if (window.confirm("are you sure you want to delete the package?")) {
-            await dispatch(deleteDelivery(id));
-
-            dispatch(getDeliveries());
-            toast('delete successfull', {
-                position: toast.POSITION.TOP_CENTER,
+    const handleDelete = async (id1, id2, status) => {
+        console.log(`delete id: ${id1}, patch id: ${id2}`);
+        try {
+            if (window.confirm("are you sure you want to cancel the delivery?")) {
+                if(status === 'delivered' || status === 'failed') {
+                    window.alert('cannot cancel a delivered or failed delivery')
+                    return
+                }
+                await dispatch(deleteDelivery(id1));
+                dispatch(getDeliveries());
+                toast('delete successfull', {
+                    position: toast.POSITION.TOP_CENTER,
+                })
+                const res = axios.patch(`http://localhost:5050/api/package/${id2}`, {packageStatus: "open",
+                driverEmail: "NONE"
             })
+                console.log(res)
+            } else{
+                return
+            }
+            
+        } catch (error) {
+            console.log(error);
         }
     };
     const handleEdit = (id) => {
         navigate(`/driverdashboard/edit/${id}`);
     };
-    const handleDetails = (packageId) => {
-        navigate(`/dashboard/view/${packageId}`);
+    const handleDetails = (packId) => {
+        dispatch(getOnePackage(packId))
+        navigate(`/dashboard/view/${packId}`);
     };
     const renderDeliveryStatus = (delivery) => {
         if (delivery === "Picked Up") {
@@ -125,6 +144,7 @@ function DeliveriesDisplay({
             );
         }
     };
+  
     if (isLoading) {
         return <SpinnerComponent />;
     }
@@ -162,7 +182,7 @@ function DeliveriesDisplay({
                                 Delivery Edit
                             </StyledTableCell>
                             <StyledTableCell width={5} align="right">
-                                Delete Delivery
+                                Cancel Delivery
                             </StyledTableCell>
                         </TableRow>
                     </TableHead>
@@ -191,7 +211,7 @@ function DeliveriesDisplay({
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
-                                                handleDetails(delivery._id)
+                                                handleDetails(delivery.packageId)
                                             }
                                             variant="outline-primary"
                                         >
@@ -212,14 +232,11 @@ function DeliveriesDisplay({
                                     <StyledTableCell align="right">
                                         <Button
                                             onClick={() =>
-                                                handleDelete(delivery._id)
+                                                handleDelete(delivery._id, delivery.packageId, delivery.status)
                                             }
                                             variant="outline-danger"
                                         >
-                                            <i
-                                                className="fa fa-trash"
-                                                aria-hidden="true"
-                                            ></i>
+                                            <i class="fa fa-times" aria-hidden="true"></i>
                                         </Button>
                                     </StyledTableCell>
                                 </StyledTableRow>

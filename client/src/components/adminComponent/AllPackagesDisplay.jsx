@@ -73,7 +73,33 @@ function AllPackagesDisplay({
     const handleDetails = (packageId) => {
         navigate(`/dashboard/view/${packageId}`);
     };
-
+    const renderPackageStatus = (status) => {
+        if (status === "open") {
+            return (
+                <Button style={{ width: "100px" }} variant="primary">
+                    {status}
+                </Button>
+            );
+        } else if (status === "failed") {
+            return (
+                <Button style={{ width: "100px" }} variant="danger">
+                    {status}
+                </Button>
+            );
+        } else if (status === "in transit") {
+            return (
+                <Button style={{ width: "100px" }} variant="secondary">
+                    {status}
+                </Button>
+            );
+        } else {
+            return (
+                <Button style={{ width: "100px" }} variant="success">
+                    {status}
+                </Button>
+            );
+        }
+    };
     if (isLoading) {
         return <SpinnerComponent />;
     }
@@ -99,6 +125,12 @@ function AllPackagesDisplay({
                                 Package Creator
                             </StyledTableCell>
                             <StyledTableCell align="center">
+                                Package Status
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                                Driver Delivering
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
                                 More Details
                             </StyledTableCell>
                         </TableRow>
@@ -121,6 +153,12 @@ function AllPackagesDisplay({
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         {pack.packageCreator}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {renderPackageStatus(pack.packageStatus)}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {pack.driverEmail}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         <Button

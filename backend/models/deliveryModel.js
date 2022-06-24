@@ -9,6 +9,10 @@ const deliverySchema = new mongoose.Schema(
             required: true,
             ref: "User",
         },
+        userEmail: {
+            type: String,
+            required: true
+        },
         packageDescription: {
             type: String,
             required: true,

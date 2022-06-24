@@ -26,6 +26,7 @@ function DeliveryForm() {
     let { id } = useParams();
 
     const onePackage = useSelector((state) => state.packages.onePackage);
+    const user = useSelector((state) => state.auth.user);
     const [statusValue, setStatusValue] = useState({});
     const dispatch = useDispatch();
     useEffect(() => {
@@ -35,11 +36,11 @@ function DeliveryForm() {
         socket.on("received status", async(data) => {
       
             console.log(`set status:${data.status}`)
-            const res = await axios.patch(`http://localhost:5050/api/package/${data.packageId}`, {packageStatus: data.status})
+            const res = await axios.patch(`http://localhost:5050/api/package/${data.packageId}`, {
+                packageStatus: data.status,
+                driverEmail: user.email
+            })
             console.log(res)
-            return () => {
-                socket.close()
-            }
         });
   
     }, [socket]);

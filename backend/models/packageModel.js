@@ -11,7 +11,11 @@ const packageSchema = new mongoose.Schema(
         },
         packageStatus: {
             type: String,
-            required: false,
+            required: true,
+        },
+        driverEmail: {
+            type: String,
+            require: true
         },
         packageCreator: {
             type: String,
@@ -40,10 +44,12 @@ const packageSchema = new mongoose.Schema(
         from_name: {
             type: String,
             required: true,
+            uppercase: true,
         },
         from_address: {
             type: String,
             required: true,
+            uppercase: true,
         },
         from_location: {
             latitude: {
@@ -58,10 +64,12 @@ const packageSchema = new mongoose.Schema(
         to_name: {
             type: String,
             required: true,
+            uppercase: true,
         },
         to_address: {
             type: String,
             required: true,
+            uppercase: true,
         },
         to_location: {
             latitude: {

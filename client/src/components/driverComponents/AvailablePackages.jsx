@@ -139,7 +139,7 @@ function AvailablePackages({
                             ))
                         ) : (
                             <div>
-                                <h3>You have no packages yet</h3>
+                                <h3>No available packages</h3>
                             </div>
                         )}
                     </TableBody>

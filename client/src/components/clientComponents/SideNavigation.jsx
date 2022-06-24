@@ -1,5 +1,5 @@
 import React from "react";
-import { Nav } from "react-bootstrap";
+import { Nav, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector } from "react-redux";
 
@@ -42,22 +42,25 @@ function SideNavigation() {
         } else {
             return (
                 <Nav>
-                    <LinkContainer to={"/admin"} style={{ color: "black" }}>
-                        <Nav.Link>all packages</Nav.Link>
+                    <LinkContainer to={"/admin"} style={{ color: "black", borderBottom: 'solid 1px grey'}}>
+                        <Nav.Link>Over View</Nav.Link>
+                    </LinkContainer>
+                    <LinkContainer to={"/admin/packages"} style={{ color: "black" }}>
+                        <Nav.Link>All Packages</Nav.Link>
                     </LinkContainer>
 
                     <LinkContainer
                         to={"/admin/deliveries"}
                         style={{ color: "black" }}
                     >
-                        <Nav.Link>all deliveries</Nav.Link>
+                        <Nav.Link>All Deliveries</Nav.Link>
                     </LinkContainer>
 
                     <LinkContainer
                         to={"/admin/users"}
                         style={{ color: "black" }}
                     >
-                        <Nav.Link>all users</Nav.Link>
+                        <Nav.Link>All Users</Nav.Link>
                     </LinkContainer>
                 </Nav>
             );

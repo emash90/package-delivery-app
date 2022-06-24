@@ -17,6 +17,7 @@ import { getAllDeliveries, reset } from "../../features/delivery/deliverySlice";
 
 function AllDeliveriesDisplay({
     user,
+    allPackages,
     allDeliveries,
     isSuccess,
     isError,
@@ -59,7 +60,6 @@ function AllDeliveriesDisplay({
         };
     }
     const [tableData, setTableData] = useState([]);
-    console.log(allDeliveries);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     useEffect(() => {
@@ -71,6 +71,45 @@ function AllDeliveriesDisplay({
     const handleDetails = (deliveryId) => {
         navigate(`/dashboard/view/${deliveryId}`);
     };
+    const renderPackageStatus = (status) => {
+        if (status === "open") {
+            return (
+                <Button style={{ width: "100px" }} variant="primary">
+                    {status}
+                </Button>
+            );
+        } else if (status === "failed") {
+            return (
+                <Button style={{ width: "100px" }} variant="danger">
+                    {status}
+                </Button>
+            );
+        } else if (status === "in transit") {
+            return (
+                <Button style={{ width: "100px" }} variant="secondary">
+                    {status}
+                </Button>
+            );
+        } else {
+            return (
+                <Button style={{ width: "100px" }} variant="success">
+                    {status}
+                </Button>
+            );
+        }
+    };
+    const checkDriver = (driver) => {
+        try {
+            const packageToDeliver = allPackages.filter(pack => pack._id === driver)
+            if(packageToDeliver) {
+                console.log(packageToDeliver)
+            }
+            
+        } catch (error) {
+            
+        }
+
+    }
 
     if (isLoading) {
         return <SpinnerComponent />;
@@ -102,7 +141,9 @@ function AllDeliveriesDisplay({
                             <StyledTableCell align="center">
                                 Delivery End_time
                             </StyledTableCell>
-
+                            <StyledTableCell align="center">
+                            Driver Delivering
+                            </StyledTableCell>
                             <StyledTableCell align="center">
                                 More Details
                             </StyledTableCell>
@@ -119,7 +160,7 @@ function AllDeliveriesDisplay({
                                         {delivery.packageDescription}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
-                                        {delivery.status}
+                                        {renderPackageStatus(delivery.status)}
                                     </StyledTableCell>
                                     <StyledTableCell align="right">
                                         {delivery.packageFrom}
@@ -136,6 +177,9 @@ function AllDeliveriesDisplay({
                                         {new Date(
                                             delivery.end_time
                                         ).toLocaleDateString()}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">
+                                        {delivery.userEmail}
                                     </StyledTableCell>
 
                                     <StyledTableCell align="right">

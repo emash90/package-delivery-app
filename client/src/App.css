@@ -29,6 +29,9 @@ main {
   color: #000;
 
 }
+.summary_card {
+  height: 50vh;
+}
 .package-summary-container {
   background-color: #555;
   color: aliceblue;

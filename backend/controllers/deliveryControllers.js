@@ -41,6 +41,7 @@ const createDelivery = asyncHandler(async (req, res) => {
     try {
         const newDelivery = new Delivery({
             user_id: req.user.id,
+            userEmail: req.user.email,
             packageId: req.body.packageId,
             pickup_time: req.body.pickup_time,
             start_time: req.body.start_time,
