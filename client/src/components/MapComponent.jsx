@@ -10,7 +10,6 @@ import SpinnerComponent from "./SpinnerComponent";
 import { IconButton, Button } from "@mui/material";
 
 function MapComponent({ onePackage }) {
-    console.log(onePackage.from_address);
     const center = { lat: -1.292066, lng: 36.821945 };
     const [map, setMap] = useState(/** @type Google.maps.map */ (null));
     const [directionsResponse, setDirectionsResponse] = useState(null);

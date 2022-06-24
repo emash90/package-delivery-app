@@ -28,7 +28,9 @@ function PackageDetails({ user }) {
 
     const goHome = () => {
         if(user.userType === "driver"){
-        navigate("/dashboard")
+        navigate("/driverdashboard")
+        } else if (user.userType === 'client'){
+            navigate("/dashboard")
         } else {
             navigate("/admin")
         }
