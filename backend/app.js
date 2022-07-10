@@ -35,6 +35,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/package", require("./routes/packageRoutes"));
 app.use("/api/delivery", require("./routes/deliveryRoutes"));
+app.get("*", (req, res) =>
+    res.sendFile(
+        path.resolve(__dirname, "../", "client", "build", "index.html")
+    )
+);
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/build")));
 } else {
@@ -42,11 +47,6 @@ if (process.env.NODE_ENV === "production") {
         res.send('set to "production"');
     });
 }
-app.get("*", (req, res) =>
-    res.sendFile(
-        path.resolve(__dirname, "../", "client", "build", "index.html")
-    )
-);
 //app.use(errorHandler);
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
