@@ -36,7 +36,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/package", require("./routes/packageRoutes"));
 app.use("/api/delivery", require("./routes/deliveryRoutes"));
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "./client/build")));
+    app.use(express.static(path.join(__dirname, "../client/build")));
 } else {
     app.get("/", (req, res) => {
         res.send('set to "production"');
