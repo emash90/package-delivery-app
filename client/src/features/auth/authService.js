@@ -2,7 +2,7 @@ import axios from "axios";
 
 //export const baseURL = process.env.REACT_APP_BASE_URL;
 
-const API_URL = "http://localhost:5050/api/users/";
+const API_URL = "https://package-delivery-project.herokuapp.com/api/users/";
 
 //register user
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5050/api/package/";
+const API_URL = "https://package-delivery-project.herokuapp.com/api/package/";
 
 //create package
 
