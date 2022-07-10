@@ -31,6 +31,7 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/package", require("./routes/packageRoutes"));
 app.use("/api/delivery", require("./routes/deliveryRoutes"));
