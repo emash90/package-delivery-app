@@ -1,5 +1,5 @@
 
-# Project Title
+# Package Delivery App
 
 Package Delivery web app is meant to serve 3 users i.e. client, driver and an admin. The client creates the package, a driver selects one package from available package list in his account and decides to deliver to the intended destination. An admin oversees the general status of the app e.g. total available packages, total number of users 
 
