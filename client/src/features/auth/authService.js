@@ -1,13 +1,11 @@
-import axios from "axios";
+import userAPI from "../../axios/axios";
 
-//export const baseURL = process.env.REACT_APP_BASE_URL;
 
-const API_URL = "https://package-delivery-project.herokuapp.com/api/users/";
 
 //register user
 
 const register = async (userData) => {
-    const response = await axios.post(API_URL + "register", userData);
+    const response = await userAPI.post( "register", userData);
 
     if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -17,7 +15,7 @@ const register = async (userData) => {
 
 //login user
 const login = async (userData) => {
-    const response = await axios.post(API_URL + "login", userData);
+    const response = await userAPI.post("login", userData);
 
     if (response.data) {
         const data = JSON.stringify(response.data);
@@ -36,7 +34,7 @@ const getAllUsers = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL + "allusers", config);
+    const response = await userAPI.get("allusers", config);
     return response.data;
 };
 //logout user
