@@ -63,7 +63,7 @@ app.use((req, res, next) => {
 
 
 
-const port = process.env.PORT
+const port = process.env.PORT || 5050
 
 mongoose
     .connect(process.env.MONGO_URI, {})
