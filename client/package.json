@@ -1,6 +1,5 @@
 {
   "name": "package-tracker-app",
-  "proxy": "https://package-delivery-project.herokuapp.com/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

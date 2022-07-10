@@ -60,7 +60,7 @@ function LoginPage() {
         }
 
         dispatch(reset());
-    }, [user, userType, isError, isSuccess, message, navigate, dispatch]);
+    }, [user, userType, isSuccess, message, navigate, dispatch]);
     if(isLoading){
         return <SpinnerComponent />
     }
