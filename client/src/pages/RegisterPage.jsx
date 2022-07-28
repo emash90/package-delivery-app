@@ -68,14 +68,8 @@ function RegisterPage({ user, packages }) {
             toast.error(message);
         }
         if (isSuccess) {
-            toast(`hey ${user.name}`);
-            if(user.accountType === 'client'){
-            navigate("/dashboard")
-            } else if(user.accountType === 'driver') {
-            navigate("/driverdashboard")
-            } else {
-            navigate("/admin")
-            }
+            toast(`hey ${user.name} you are now registered`);
+            navigate("/login");
         }
         dispatch(reset());
     }, [isError, isSuccess, message, navigate, dispatch]);
