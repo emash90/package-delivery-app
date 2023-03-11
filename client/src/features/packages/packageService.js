@@ -1,7 +1,7 @@
 import axios from "axios";
-import { packageAPI }  from "../../axios/axios";
+//import { packageAPI }  from "../../axios/axios";
 
-const API_URL = packageAPI
+const API_URL = "/api/package/";
 
 //create package
 

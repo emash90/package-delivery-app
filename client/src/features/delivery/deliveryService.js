@@ -1,7 +1,7 @@
 import axios from "axios";
-import { deliveryAPI }  from "../../axios/axios";
+//import { deliveryAPI }  from "../../axios/axios";
 
-const API_URL = deliveryAPI
+const API_URL = 'api/delivery/'
 
 //create delivery
 

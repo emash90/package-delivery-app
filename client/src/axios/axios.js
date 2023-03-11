@@ -1,21 +1,17 @@
 import axios from "axios";
 
-if (process.env.NODE_ENV === "production") {
- axios.defaults.baseURL = "69.164.217.119";
-} else {
-    axios.defaults.baseURL = "http://localhost:5050";
-}
+const API_URL = process.env.API_BASE_URL
 
 const userAPI = axios.create({
- baseURL: axios.defaults.baseURL + "/api/users",
+    baseURL: API_URL + "/api/users/"
 });
 
 const packageAPI = axios.create({
-    baseURL: axios.defaults.baseURL + "/api/package",
+    baseURL: API_URL + "/api/package/"
 });
 
 const deliveryAPI = axios.create({
-    baseURL: axios.defaults.baseURL + "/api/delivery",
+    baseURL: API_URL + "/api/delivery/"
 });
 
 export { userAPI, packageAPI, deliveryAPI };

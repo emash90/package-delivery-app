@@ -1,11 +1,12 @@
-import { userAPI } from "../../axios/axios";
+//import { userAPI } from "../../axios/axios";
+import axios from "axios";
 
-
+const userAPI = '/api/users/'
 
 //register user
 
 const register = async (userData) => {
-    const response = await userAPI.post( "register", userData);
+    const response = await axios.post(userAPI + "register", userData);
 
     if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -15,7 +16,7 @@ const register = async (userData) => {
 
 //login user
 const login = async (userData) => {
-    const response = await userAPI.post("login", userData);
+    const response = await axios.post(userAPI + "login", userData);
 
     if (response.data) {
         const data = JSON.stringify(response.data);
@@ -34,7 +35,7 @@ const getAllUsers = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await userAPI.get("allusers", config);
+    const response = await axios.get(userAPI + "allusers", config);
     return response.data;
 };
 //logout user
