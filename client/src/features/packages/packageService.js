@@ -1,6 +1,7 @@
 import axios from "axios";
+import { packageAPI }  from "../../axios/axios";
 
-const API_URL = "https://package-delivery-project.herokuapp.com/api/package/";
+const API_URL = packageAPI
 
 //create package
 

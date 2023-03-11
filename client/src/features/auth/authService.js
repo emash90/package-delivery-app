@@ -1,4 +1,4 @@
-import userAPI from "../../axios/axios";
+import { userAPI } from "../../axios/axios";
 
 
 
