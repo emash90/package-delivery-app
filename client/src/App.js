@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import SpinnerComponent from "./components/SpinnerComponent";
 import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:5050");
+const socket = io.connect(process.env.REACT_APP_API_URL);
 
 function App() {
     const { user, allUsers } = useSelector((state) => state.auth);
