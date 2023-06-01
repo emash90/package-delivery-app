@@ -20,7 +20,7 @@ import updatedPackage from '../../features/packages/packageSlice'
 import SpinnerComponent from "../SpinnerComponent";
 import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:5050");
+const socket = io.connect(process.env.REACT_APP_API_URL)
 
 function DeliveryForm() {
     let { id } = useParams();
@@ -36,7 +36,7 @@ function DeliveryForm() {
         socket.on("received status", async(data) => {
       
             console.log(`set status:${data.status}`)
-            const res = await axios.patch(`http://localhost:5050/api/package/${data.packageId}`, {
+            const res = await axios.patch(`${process.env.REACT_APP_API_URL}/api/package/${data.packageId}`, {
                 packageStatus: data.status,
                 driverEmail: user.email
             })

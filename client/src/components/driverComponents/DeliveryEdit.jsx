@@ -9,7 +9,7 @@ import { Radio, Grid, TextField, Button, RadioGroup, FormControlLabel, FormContr
 import SpinnerComponent from '../SpinnerComponent';
 import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:5050");
+const socket = io.connect(process.env.REACT_APP_API_URL);
 
 
 function DeliveryEdit({ oneDelivery, onePackage }) {

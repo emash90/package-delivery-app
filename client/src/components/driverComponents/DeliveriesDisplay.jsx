@@ -98,7 +98,7 @@ function DeliveriesDisplay({
                 toast('delete successfull', {
                     position: toast.POSITION.TOP_CENTER,
                 })
-                const res = axios.patch(`http://localhost:5050/api/package/${id2}`, {packageStatus: "open",
+                const res = axios.patch(`${process.env.REACT_APP_API_URL}/api/package/${id2}`, {packageStatus: "open",
                 driverEmail: "NONE"
             })
                 console.log(res)
