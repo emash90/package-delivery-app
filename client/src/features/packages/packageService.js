@@ -1,7 +1,7 @@
 import axios from "axios";
-//import { packageAPI }  from "../../axios/axios";
+import { packageAPI }  from "../../axios/axios";
 
-const API_URL = "/api/package/";
+//const API_URL = "/api/package/";
 
 //create package
 
@@ -11,7 +11,7 @@ const createPackage = async (newPackage, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.post(API_URL, newPackage, config);
+    const response = await axios.post(packageAPI.defaults.baseURL, newPackage, config);
 
     return response.data;
 };
@@ -23,7 +23,7 @@ const getPackages = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL, config);
+    const response = await axios.get(packageAPI.defaults.baseURL, config);
 
     return response.data;
 };
@@ -33,7 +33,7 @@ const getAllPackages = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL + "allpackages", config);
+    const response = await axios.get(packageAPI.defaults.baseURL + "allpackages", config);
 
     return response.data;
 };
@@ -46,7 +46,7 @@ const getOnePackage = async (packageId, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL + packageId, config);
+    const response = await axios.get(packageAPI.defaults.baseURL + packageId, config);
 
     return response.data;
 };
@@ -60,7 +60,7 @@ const updatedPackage = async (updateData, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.patch(API_URL + id, packageData);
+    const response = await axios.patch(packageAPI.defaults.baseURL + id, packageData, config);
 
     return response.data;
 };
@@ -73,7 +73,7 @@ const deletePackage = async (packageId, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.delete(API_URL + packageId, config);
+    const response = await axios.delete(packageAPI.defaults.baseURL + packageId, config);
 
     return response.data;
 };

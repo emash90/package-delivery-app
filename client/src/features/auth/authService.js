@@ -1,12 +1,14 @@
 //import { userAPI } from "../../axios/axios";
 import axios from "axios";
+import { userAPI } from "../../axios/axios";
 
-const userAPI = '/api/users/'
+
+//const userAPI = '/api/users/'
 
 //register user
 
 const register = async (userData) => {
-    const response = await axios.post(userAPI + "register", userData);
+    const response = await axios.post(userAPI.defaults.baseURL + "register", userData);
 
     if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -16,7 +18,9 @@ const register = async (userData) => {
 
 //login user
 const login = async (userData) => {
-    const response = await axios.post(userAPI + "login", userData);
+    console.log("api", userAPI.defaults.baseURL);
+    const response = await axios.post(userAPI.defaults.baseURL + "login", userData)
+    console.log("response", response);
 
     if (response.data) {
         const data = JSON.stringify(response.data);
@@ -35,7 +39,7 @@ const getAllUsers = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(userAPI + "allusers", config);
+    const response = await axios.get(userAPI.defaults.baseURL + "allusers", config);
     return response.data;
 };
 //logout user

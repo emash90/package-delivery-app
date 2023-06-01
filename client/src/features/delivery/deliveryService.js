@@ -1,7 +1,7 @@
 import axios from "axios";
-//import { deliveryAPI }  from "../../axios/axios";
+import { deliveryAPI }  from "../../axios/axios";
 
-const API_URL = 'api/delivery/'
+//const API_URL = 'api/delivery/'
 
 //create delivery
 
@@ -11,7 +11,7 @@ const createDelivery = async (newDelivery, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.post(API_URL, newDelivery, config);
+    const response = await axios.post(deliveryAPI.defaults.baseURL, newDelivery, config);
     console.log(newDelivery);
     return response.data;
 };
@@ -23,7 +23,7 @@ const getDeliveries = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL, config);
+    const response = await axios.get(deliveryAPI.defaults.baseURL, config);
 
     return response.data;
 };
@@ -35,7 +35,7 @@ const getAllDeliveries = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL + "alldeliveries", config);
+    const response = await axios.get(deliveryAPI.defaults.baseURL + "alldeliveries", config);
 
     return response.data;
 };
@@ -48,7 +48,7 @@ const getOneDelivery = async (deliveryID, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL + deliveryID, config);
+    const response = await axios.get(deliveryAPI.defaults.baseURL + deliveryID, config);
 
     return response.data;
 };
@@ -62,7 +62,7 @@ const updatedDelivery = async (deliveryDataObj, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.patch(`${API_URL}${id}`, deliveryData, config);
+    const response = await axios.patch(`${deliveryAPI.defaults.baseURL}${id}`, deliveryData, config);
 
     return response.data;
 };
@@ -75,7 +75,7 @@ const deleteDelivery = async (deliveryID, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.delete(API_URL + deliveryID, config);
+    const response = await axios.delete(deliveryAPI.defaults.baseURL + deliveryID, config);
 
     return response.data;
 };

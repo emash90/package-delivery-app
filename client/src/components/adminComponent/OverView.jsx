@@ -13,6 +13,7 @@ function OverView({ }) {
     const { allPackages } = useSelector((state) => state.packages)
     const { allDeliveries } = useSelector((state) => state.deliveries)
     const { allUsers } = useSelector((state) => state.auth)
+    console.log(allUsers)
     useEffect(() => {
         const fetchAllPackages = () => {
             dispatch(getAllPackages())
