@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  server:
+    build: .
+    ports:
+      - "5050:5050"
+    volumes:
+      - .:/app:ro
+      - /app/node_modules
+
+    command: npm run dev
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+    command: npm start
+
