@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  loadbalancer:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - server
+      - client
+  server:
+    build: .
+    ports:
+      - "5050:5050"
+    volumes:
+      - .:/app:ro
+      - /app/node_modules
+
+    command: npm run dev
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+    command: npm start
+

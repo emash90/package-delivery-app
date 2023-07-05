@@ -10,7 +10,7 @@ const mongoose = require('mongoose')
 const morgan = require('morgan')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const { errorHandler } = require('./middlewares/errorMiddleware')
+const { errorHandler } = require('./backend/middlewares/errorMiddleware')
 
 const io = new Server(server, {
     cors: {
@@ -32,9 +32,9 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/package", require("./routes/packageRoutes"));
-app.use("/api/delivery", require("./routes/deliveryRoutes"));
+app.use("/api/users", require("./backend/routes/userRoutes"));
+app.use("/api/package", require("./backend/routes/packageRoutes"));
+app.use("/api/delivery", require("./backend/routes/deliveryRoutes"));
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/build")));
 } else {
