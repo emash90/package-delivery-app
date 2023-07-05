@@ -121,7 +121,7 @@ function RegisterPage({ user, packages }) {
                 </div>
                 <div className="form-group  mb-3">
                     <input
-                        type="text"
+                        type="password"
                         name="password"
                         className="form-control"
                         id="password"
@@ -132,7 +132,7 @@ function RegisterPage({ user, packages }) {
                 </div>
                 <div className="form-group  mb-3">
                     <input
-                        type="text"
+                        type="password"
                         name="password2"
                         className="form-control"
                         id="password2"
