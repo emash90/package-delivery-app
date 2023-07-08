@@ -17,7 +17,7 @@ services:
       - .:/app:ro
       - /app/node_modules
 
-    command: node app.js
+    command: npm start
   client:
     build: ./client
     ports:
