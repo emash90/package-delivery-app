@@ -11,6 +11,7 @@ services:
       - client
   server:
     build: .
+    image: emash90/package-delivery-server:latest
     ports:
       - "5050:5050"
     volumes:
@@ -20,10 +21,11 @@ services:
     command: npm start
   client:
     build: ./client
+    image: emash90/package-delivery-client:latest
     ports:
       - "3000:3000"
     volumes:
-      - ./client:/app
+      - ./client:/app:ro
       - /app/node_modules
     command: npm start
 
