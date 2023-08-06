@@ -13,9 +13,20 @@ pipeline {
       }
     }
 
-    stage('BuildImage') {
-      steps {
-        sh 'docker build -t emash90/package-server:latest .'
+    stage('Build Server Image') {
+      parallel {
+        stage('BuildImage') {
+          steps {
+            sh 'docker build -t emash90/package-server:latest .'
+          }
+        }
+
+        stage('Build Client Image') {
+          steps {
+            sh 'docker build -f client/Dockerfile -t emash90/client:latest .'
+          }
+        }
+
       }
     }
 
