@@ -41,8 +41,19 @@ pipeline {
     }
 
     stage('push to dockerhub') {
-      steps {
-        sh 'docker push emash90/client:latest'
+      parallel {
+        stage('push to dockerhub') {
+          steps {
+            sh 'docker push emash90/client:latest'
+          }
+        }
+
+        stage('push server image') {
+          steps {
+            sh 'docker push emash90/package-server:latest'
+          }
+        }
+
       }
     }
 
