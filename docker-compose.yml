@@ -14,16 +14,16 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - .:/app
+      - .:/app:ro
       - /app/node_modules
 
     command: npm start
   client:
-    image: emash90/client:latest
+    image: emash90/package-delivery-client:latest
     ports:
       - "3000:3000"
     volumes:
-      - ./client:/app/client
+      - ./client:/app/client:ro
       - /app/client/node_modules
     command: npm start
 
