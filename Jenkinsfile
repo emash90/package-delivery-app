@@ -40,5 +40,11 @@ pipeline {
       }
     }
 
+    stage('push to dockerhub') {
+      steps {
+        sh 'docker push emash90/client:latest'
+      }
+    }
+
   }
 }
