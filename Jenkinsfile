@@ -15,7 +15,7 @@ pipeline {
 
     stage('BuildImage') {
       steps {
-        sh 'docker build -t emash90/package-server:latest .'
+        sh 'sudo docker build -t emash90/package-server:latest .'
       }
     }
 
