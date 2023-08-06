@@ -20,6 +20,10 @@ pipeline {
     }
 
     stage('LoginDockerhub') {
+      environment {
+        DOCKERHUB_USERNAME = 'emash90'
+        DOCKERHUB_PASS = 'Classic105.'
+      }
       steps {
         sh 'docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASS'
       }
