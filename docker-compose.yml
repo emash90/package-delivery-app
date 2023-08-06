@@ -10,7 +10,6 @@ services:
       - server
       - client
   server:
-    build: .
     image: emash90/package-server:latest
     ports:
       - "5050:5050"
@@ -20,7 +19,6 @@ services:
 
     command: npm start
   client:
-    build: ./client
     image: emash90/client:latest
     ports:
       - "3000:3000"
