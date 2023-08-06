@@ -13,5 +13,17 @@ pipeline {
       }
     }
 
+    stage('BuildImage') {
+      steps {
+        sh 'docker build -t emash90/package-server:latest .'
+      }
+    }
+
+    stage('LoginDockerhub') {
+      steps {
+        sh 'docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASS'
+      }
+    }
+
   }
 }
