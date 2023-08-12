@@ -2,31 +2,31 @@ pipeline {
   agent any
   stages {
     stage('CheckCode') {
-      steps {
-        git(url: 'https://github.com/emash90/package-delivery-app', branch: 'main')
-      }
-    }
-
-    stage('LogFiles') {
-      steps {
-        sh 'ls -la'
-      }
-    }
-
-    stage('Build Server Image') {
       parallel {
-        stage('BuildImage') {
+        stage('CheckCode') {
           steps {
-            sh 'docker build -t emash90/package-server:latest .'
+            git(url: 'https://github.com/emash90/package-delivery-app', branch: 'main')
           }
         }
 
-        stage('Build Client Image') {
+        stage('log directories') {
           steps {
-            sh 'docker build -f client/Dockerfile -t emash90/client:latest .'
+            sh 'ls -la'
           }
         }
 
+      }
+    }
+
+    stage('build client image') {
+      steps {
+        sh 'docker build -t emash90/package-client:latest /client'
+      }
+    }
+
+    stage('Build server image') {
+      steps {
+        sh 'docker build -t emash90/package-server:latest .'
       }
     }
 
