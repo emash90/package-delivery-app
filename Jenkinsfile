@@ -20,7 +20,7 @@ pipeline {
 
     stage('build client image') {
       steps {
-        sh 'docker build -t emash90/package-client:latest /client'
+        sh 'docker build -t emash90/package-client:latest ./client'
       }
     }
 
