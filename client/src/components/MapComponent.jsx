@@ -82,7 +82,7 @@ function MapComponent({ onePackage }) {
                 onLoad={(map) => setMap(map)}
             >
                 <Marker position={center} />
-                <IconButton onClick={() => map.panTo(center)}>
+                <IconButton onClick={() => map.panTo(center)} size="large">
                     <i class="fa fa-location-arrow" aria-hidden="true"></i>
                 </IconButton>
                 {directionsResponse && (
