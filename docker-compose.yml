@@ -14,7 +14,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - .:/app:ro
+      - .:/app
       - /app/node_modules
 
     command: npm start
@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./client:/app/client:ro
+      - ./client:/app/client
       - /app/client/node_modules
     command: npm start
 
