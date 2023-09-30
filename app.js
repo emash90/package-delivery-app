@@ -64,6 +64,7 @@ mongoose
     .connect(process.env.MONGO_URI, {})
     .then((result) => {
         console.log("connected to the db");
+        console.log(process.env.NODE_ENV)
         server.listen(port, () => {
             console.log(`server listening on port ${port}...`);
         });
