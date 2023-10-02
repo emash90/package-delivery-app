@@ -19,7 +19,7 @@ services:
 
     command: npm start
   client:
-    image: emash90/package-client:1.0.2
+    image: emash90/package-client:1.0.3
     ports:
       - "3000:3000"
     volumes:
