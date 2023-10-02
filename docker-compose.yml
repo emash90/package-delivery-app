@@ -19,11 +19,11 @@ services:
 
     command: npm start
   client:
-    image: emash90/package-client:1.0.1
+    image: emash90/package-client:1.0.2
     ports:
       - "3000:3000"
     volumes:
-      - ./client:/app/client
+      - ./client:/app
       - /app/client/node_modules
     command: npm start
 
