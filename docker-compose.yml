@@ -10,7 +10,7 @@ services:
       - server
       - client
   server:
-    image: emash90/package-server:1.0.0
+    image: emash90/package-server:1.0.1
     ports:
       - "5050:5050"
     volumes:
@@ -19,7 +19,7 @@ services:
 
     command: npm start
   client:
-    image: emash90/package-client:1.0.0
+    image: emash90/package-client:1.0.1
     ports:
       - "3000:3000"
     volumes:
