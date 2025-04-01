@@ -68,15 +68,19 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { dispatch }) => {
+    localStorage.removeItem('token');
+    // No need to dispatch the original logout action if we're handling it here
+    return null;
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      localStorage.removeItem('token');
-    },
     setSelectedRole: (state, action: PayloadAction<UserRole | null>) => {
       state.selectedRole = action.payload;
     },
@@ -135,9 +139,14 @@ const authSlice = createSlice({
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.selectedRole = null;
       });
   },
 });
 
-export const { logout, setSelectedRole, clearErrors } = authSlice.actions;
+export const { setSelectedRole, clearErrors } = authSlice.actions;
 export default authSlice.reducer;

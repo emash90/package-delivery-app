@@ -17,7 +17,7 @@ import {
   PlusCircle,
   FileImage
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
@@ -51,20 +51,19 @@ const OwnerDashboard = () => {
   useEffect(() => {
     // Fetch packages when component mounts
     dispatch(fetchPackages(user?.id));
-    
+
   }, [dispatch, user?.id]);
 
   // Filter packages based on search and filter criteria
   const filteredPackages = packages.filter(pkg => {
     const matchesSearch = pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         pkg.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          pkg.status.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesStatus = statusFilter === 'All Statuses' || pkg.status === statusFilter;
     
     // You would add time filter logic here based on your actual data structure
     return matchesSearch && matchesStatus;
   });
+  console.log("filtered", filteredPackages)
 
   const handleDeletePackage = async (packageId: string) => {
     if (window.confirm('Are you sure you want to delete this package?')) {
@@ -206,8 +205,8 @@ const OwnerDashboard = () => {
                   >
                     <option>All Statuses</option>
                     <option>In Transit</option>
-                    <option>Delivered</option>
-                    <option>Processing</option>
+                    <option>delivered</option>
+                    <option>processing</option>
                   </select>
                   <select 
                     className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
@@ -308,14 +307,14 @@ const OwnerDashboard = () => {
                                 <p className="text-sm text-muted-foreground">Estimated Arrival</p>
                                 <p className="text-sm flex items-center gap-1 mt-1">
                                   <Clock className="h-3 w-3 text-muted-foreground" />
-                                  {pkg.eta}
+                                  {formatDate(pkg.eta)}
                                 </p>
                               </div>
                               
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="text-sm text-muted-foreground">Last Update</p>
-                                  <p className="text-sm mt-1">{pkg.lastUpdate}</p>
+                                  <p className="text-sm mt-1">{formatDate(pkg.lastUpdate)}</p>
                                 </div>
                                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
                               </div>

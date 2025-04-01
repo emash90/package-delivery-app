@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { packageApi } from '../../services/api';
+import { logout } from './authSlice'
+
 
 export interface PackageImage {
   id: string;
@@ -13,6 +15,9 @@ export interface Package {
   status: string;
   location: string;
   eta: string;
+  trackingId? : string;
+  createdAt: string;
+  recipientContact: string;
   lastUpdate: string;
   images: PackageImage[];
   category: string;
@@ -21,7 +26,7 @@ export interface Package {
   recipientName?: string;
   recipientAddress?: string;
   recipientPhone?: string;
-  userId?: string; // Added userId to Package interface
+  userId?: string;
 }
 
 interface PackageState {
@@ -130,7 +135,10 @@ const packageSlice = createSlice({
       })
       .addCase(fetchPackages.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.packages = action.payload;
+        state.packages = action.payload.map(({ _id, ...rest }) => ({
+          ...rest,
+          id: _id
+        }));
       })
       .addCase(fetchPackages.rejected, (state, action) => {
         state.isLoading = false;
@@ -196,6 +204,11 @@ const packageSlice = createSlice({
         if (state.currentPackage && state.currentPackage.id === action.payload.packageId) {
           state.currentPackage.images.push(action.payload.image);
         }
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.packages = [];
+        state.availablePackages = [];
+        state.currentPackage = null;
       });
   },
 });

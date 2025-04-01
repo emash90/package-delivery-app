@@ -1,10 +1,11 @@
-
 import amqp from 'amqplib';
 import { logger } from './logger';
 
 let channel: amqp.Channel;
+const MAX_RETRIES = 2; // Number of retry attempts
+const RETRY_DELAY_MS = 5000; // Delay between retries in milliseconds
 
-export async function setupMessageBroker() {
+export async function setupMessageBroker(retries = 0): Promise<void> {
   try {
     const RABBITMQ_URI = process.env.RABBITMQ_URI || 'amqp://localhost:5672';
     const connection = await amqp.connect(RABBITMQ_URI);
@@ -24,7 +25,6 @@ export async function setupMessageBroker() {
         try {
           const content = JSON.parse(msg.content.toString());
           logger.info(`Received delivery update: ${JSON.stringify(content)}`);
-          
           channel.ack(msg);
         } catch (error) {
           logger.error('Error processing delivery update:', error);
@@ -32,22 +32,31 @@ export async function setupMessageBroker() {
         }
       }
     });
-    
+
     logger.info('Connected to RabbitMQ');
-    
+
     connection.on('error', (err) => {
       logger.error('RabbitMQ connection error:', err);
-      setTimeout(setupMessageBroker, 5000);
+      setTimeout(() => setupMessageBroker(0), RETRY_DELAY_MS);
     });
-    
-    return channel;
+
   } catch (error) {
-    logger.error('Failed to connect to RabbitMQ:', error);
-    setTimeout(setupMessageBroker, 5000);
-    throw error;
+    logger.error(`Failed to connect to RabbitMQ (attempt ${retries + 1}/${MAX_RETRIES}):`, error);
+
+    if (retries < MAX_RETRIES) {
+      logger.info(`Retrying RabbitMQ connection in ${RETRY_DELAY_MS / 1000} seconds...`);
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+      return setupMessageBroker(retries + 1);
+    }
+
+    logger.error('Max retries reached. Could not connect to RabbitMQ.');
+    process.exit(1); // Exit the process if max retries are reached
   }
 }
 
+/**
+ * Message Publisher Class
+ */
 export class MessagePublisher {
   async publish(routingKey: string, message: any): Promise<void> {
     if (!channel) {

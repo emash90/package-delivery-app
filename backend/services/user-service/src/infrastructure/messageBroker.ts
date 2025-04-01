@@ -1,4 +1,3 @@
-
 import amqp from 'amqplib';
 import { logger } from './logger';
 
@@ -12,15 +11,15 @@ export async function setupMessageBroker() {
     channel = await connection.createChannel();
     
     // Declare exchanges
-    await channel.assertExchange('packaroo.events', 'topic', { durable: true });
-    
-    logger.info('Connected to RabbitMQ');
-    
+    await channel.assertExchange('packaroo.user-events', 'topic', { durable: true });
+
+    logger.info('Connected to RabbitMQ (User Service)');
+
     connection.on('error', (err) => {
       logger.error('RabbitMQ connection error:', err);
       setTimeout(setupMessageBroker, 15000);
     });
-    
+
     return channel;
   } catch (error) {
     logger.error('Failed to connect to RabbitMQ:', error);
@@ -35,7 +34,7 @@ export class MessagePublisher {
       throw new Error('RabbitMQ channel is not initialized');
     }
     
-    const exchange = 'packaroo.events';
+    const exchange = 'packaroo.user-events';
     const content = Buffer.from(JSON.stringify(message));
     
     try {
@@ -44,9 +43,9 @@ export class MessagePublisher {
         persistent: true
       });
       
-      logger.info(`Message published to ${exchange} with routing key ${routingKey}`);
+      logger.info(`User event published to ${exchange} with routing key ${routingKey}`);
     } catch (error) {
-      logger.error('Failed to publish message:', error);
+      logger.error('Failed to publish user event:', error);
       throw error;
     }
   }

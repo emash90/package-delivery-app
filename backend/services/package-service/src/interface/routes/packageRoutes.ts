@@ -4,7 +4,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { PackageController } from '../controllers/packageController';
 import { PackageService } from '../../application/services/PackageService';
 import { PackageRepository } from '../../infrastructure/repositories/PackageRepository';
-import { MessagePublisher } from '../../infrastructure/messageBroker';
+import { MessagePublisher } from '../../infrastructure/messageBroker'
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ const packageController = new PackageController(packageService);
 router.get('/track/:id', packageController.trackPackage);
 
 // Get all packages (requires authentication)
-router.get('/', authMiddleware, packageController.getAllPackages);
+router.get('/available', authMiddleware, packageController.getAllPackages);
 
 // Get package by ID (requires authentication)
 router.get('/:id', authMiddleware, packageController.getPackageById);
