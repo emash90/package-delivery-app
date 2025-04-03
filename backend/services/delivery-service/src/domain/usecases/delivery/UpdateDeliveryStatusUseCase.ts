@@ -1,7 +1,7 @@
 
 import { Delivery, DeliveryStatus } from '../../entities/Delivery';
 import { IDeliveryRepository } from '../../repositories/IDeliveryRepository';
-import { MessagePublisher } from '../../../infrastructure/messageBroker';
+import { MessagePublisher } from '../../../infrastructure/messageBroker/MessagePublisher';
 
 export class UpdateDeliveryStatusUseCase {
   constructor(

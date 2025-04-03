@@ -7,4 +7,5 @@ export interface IDeliveryService {
   startDelivery(deliveryId: string, driverId: string): Promise<Delivery | null>;
   completeDelivery(deliveryId: string, driverId: string): Promise<Delivery | null>;
   reportIssue(deliveryId: string, issue: string): Promise<Delivery | null>;
+  getPendingDeliveries(status: String): Promise<Delivery[]>;
 }

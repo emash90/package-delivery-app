@@ -8,4 +8,5 @@ export interface IDeliveryRepository {
   create(delivery: Delivery): Promise<Delivery>;
   update(id: string, delivery: Partial<Delivery>): Promise<Delivery | null>;
   delete(id: string): Promise<boolean>;
+  findPending(status: String): Promise<Delivery[]>;
 }

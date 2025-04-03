@@ -96,6 +96,7 @@ export const userApi = {
 };
 
 export const deliveryApi = {
+  getPendingDeliveries: () => fetchData('/deliveries'),
   getDriverDeliveries: () => fetchData('/deliveries/driver'),
   getOwnerDeliveries: () => fetchData('/deliveries/owner'),
   startDelivery: (deliveryId: string) => fetchData(`/deliveries/${deliveryId}/start`, {

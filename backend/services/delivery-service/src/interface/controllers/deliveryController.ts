@@ -104,4 +104,19 @@ export class DeliveryController {
       res.status(500).json({ message: 'Failed to report delivery issue' });
     }
   };
+
+  getPendingDeliveries = async (req: AuthRequest, res: Response) => {
+    try {
+      const deliveries = await this.deliveryService.getPendingDeliveries('pending');
+      res.status(200).json(deliveries);
+    } catch (error) {
+      logger.error('Error fetching pending deliveries:', error);
+      res.status(500).json({ message: 'Failed to fetch pending deliveries' });
+    }
+  };
+
+
 }
+
+
+

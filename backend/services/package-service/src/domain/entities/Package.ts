@@ -2,7 +2,7 @@
 export type PackageStatus = 'processing' | 'in transit' | 'delivered' | 'cancelled';
 
 export interface Package {
-  id?: string;
+  _id?: string;
   name: string;
   description: string;
   weight: number;
@@ -11,7 +11,7 @@ export interface Package {
     height: number;
     length: number;
   };
-  ownerId: string;
+  userId: string;
   recipientName: string;
   recipientAddress: string;
   recipientContact: string;

@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import { logger } from './infrastructure/logger';
 import { deliveryRoutes as deliveryRouter } from './interface/routes/deliveryRoutes';
 import { setupMessageBroker } from './infrastructure/messageBroker';
+import { DeliveryRepository } from './infrastructure/repositories/DeliveryRepository';
+
 
 require('dotenv').config();
 
@@ -28,10 +30,14 @@ mongoose.connect(MONGODB_URI)
   });
 
 // Setup message broker
-setupMessageBroker().catch(error => {
-  logger.error('RabbitMQ connection error:', error);
-  process.exit(1);
-});
+
+async function startDeliveryService() {
+  const deliveryRepo = new DeliveryRepository();
+  await setupMessageBroker(deliveryRepo);
+  logger.info('Delivery service started');
+}
+
+startDeliveryService();
 
 // Routes
 app.use('/api/deliveries', deliveryRouter);

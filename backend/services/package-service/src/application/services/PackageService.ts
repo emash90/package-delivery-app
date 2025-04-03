@@ -8,7 +8,7 @@ import { CreatePackageUseCase } from '../../domain/usecases/package/CreatePackag
 import { GetAvailablePackagesUseCase } from '../../domain/usecases/package/GetAvailablePackagesUseCase';
 import { GetPackagesByOwnerIdUseCase } from '../../domain/usecases/package/GetPackagesByOwnerIdUseCase';
 import { TrackPackageUseCase } from '../../domain/usecases/package/TrackPackageUseCase';
-import { MessagePublisher } from '../../infrastructure/messageBroker';
+import { MessagePublisher } from '../../infrastructure/messageBroker/index'
 
 export class PackageService implements IPackageService {
   private getAllPackagesUseCase: GetAllPackagesUseCase;
@@ -60,7 +60,7 @@ export class PackageService implements IPackageService {
     if (updatedPackage) {
       // Publish package updated event
       await this.messagePublisher.publish('package.updated', {
-        id: updatedPackage.id,
+        id: updatedPackage._id,
         status: updatedPackage.status,
         trackingId: updatedPackage.trackingId
       });

@@ -4,7 +4,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { PackageController } from '../controllers/packageController';
 import { PackageService } from '../../application/services/PackageService';
 import { PackageRepository } from '../../infrastructure/repositories/PackageRepository';
-import { MessagePublisher } from '../../infrastructure/messageBroker'
+import { MessagePublisher } from '../../infrastructure/messageBroker/index'
 
 const router = express.Router();
 

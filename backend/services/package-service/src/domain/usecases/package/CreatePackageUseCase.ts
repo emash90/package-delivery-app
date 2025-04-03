@@ -17,10 +17,19 @@ export class CreatePackageUseCase {
     
     // Publish package created event
     await this.messagePublisher.publish('package.created', {
-      id: newPackage.id,
-      ownerId: newPackage.ownerId,
+      id: newPackage._id,
+      ownerId: newPackage.userId,
       status: newPackage.status,
-      trackingId: newPackage.trackingId
+      trackingId: newPackage.trackingId,
+      createdAt: newPackage.createdAt,
+      updatedAt: newPackage.updatedAt,
+      name: newPackage.name,
+      description: newPackage.description,
+      weight: newPackage.weight,
+      dimensions: newPackage.dimensions,
+      recipientName: newPackage.recipientName,
+      recipientAddress: newPackage.location,
+      recipientContact: newPackage.recipientContact
     });
     
     return newPackage;

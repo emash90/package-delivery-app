@@ -1,14 +1,22 @@
 
 import amqp from 'amqplib';
 import { logger } from './logger';
+import { Delivery } from '../domain/entities/Delivery'
+import { IDeliveryRepository } from '../domain/repositories/IDeliveryRepository'
+import { MessagePublisher } from './messageBroker/MessagePublisher'
+
+
+
+let deliveryRepository: IDeliveryRepository;
+
 
 let channel: amqp.Channel;
 
-export async function setupMessageBroker() {
+export async function setupMessageBroker(repo: IDeliveryRepository) {
   try {
     const RABBITMQ_URI = process.env.RABBITMQ_URI || 'amqp://localhost:5672';
     const connection = await amqp.connect(RABBITMQ_URI);
-    
+    deliveryRepository = repo;
     channel = await connection.createChannel();
     
     // Declare exchanges
@@ -19,22 +27,64 @@ export async function setupMessageBroker() {
     await channel.bindQueue('delivery-service.package-updates', 'packaroo.events', 'package.updated');
     
     // Set up consumer for package updates
-    channel.consume('delivery-service.package-updates', async (msg) => {
+    await channel.consume('delivery-service.package-updates', async (msg) => {
       if (msg) {
         try {
           const content = JSON.parse(msg.content.toString());
           logger.info(`Received package update: ${JSON.stringify(content)}`);
-          
-          // Process package update (update delivery status, etc.)
-          // Implementation would go here
-          
+                
           channel.ack(msg);
         } catch (error) {
           logger.error('Error processing package update:', error);
           channel.nack(msg, false, true);
         }
       }
-    });
+    }, { noAck: false });
+    
+    // Declare queue for package creation and bind to exchange with correct routing key
+    await channel.assertQueue('delivery-service.package-created', { durable: true });
+    await channel.bindQueue('delivery-service.package-created', 'packaroo.events', 'package.created');
+
+
+    // Consumer for package creation
+    await channel.consume('delivery-service.package-created', async (msg) => {
+
+      if (!msg) return;
+      console.log("package created", msg)
+        try {
+          const content = JSON.parse(msg.content.toString());
+          logger.info(`Received package created event: ${JSON.stringify(content)}`);
+          console.log("package created", content)
+          // Create a new delivery based on the package
+          const newDelivery: Delivery = {
+            packageId: content.id,
+            status: 'pending',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            trackingId: content.trackingId,
+            ownerId: content.ownerId,
+            recipientName: content.recipientName,
+            recipientAddress: content.recipientAddress,
+            recipientPhone: content.recipientContact,
+          };
+
+          const createdDelivery = await deliveryRepository.create(newDelivery);
+
+          // Publish delivery.created event
+          const publisher = new MessagePublisher();
+          await publisher.publish('delivery.created', {
+            id: createdDelivery.id,
+            packageId: createdDelivery.packageId,
+            status: createdDelivery.status,
+            trackingId: createdDelivery.trackingId
+          });
+
+          channel.ack(msg);
+        } catch (error) {
+          logger.error('Delivery creation failed:', error);
+          channel.nack(msg, false, false);
+        }
+    }, { noAck: false });
     
     logger.info('Connected to RabbitMQ');
     
@@ -51,25 +101,25 @@ export async function setupMessageBroker() {
   }
 }
 
-export class MessagePublisher {
-  async publish(routingKey: string, message: any): Promise<void> {
-    if (!channel) {
-      throw new Error('RabbitMQ channel is not initialized');
-    }
+// export class MessagePublisher {
+//   async publish(routingKey: string, message: any): Promise<void> {
+//     if (!channel) {
+//       throw new Error('RabbitMQ channel is not initialized');
+//     }
     
-    const exchange = 'packaroo.events';
-    const content = Buffer.from(JSON.stringify(message));
+//     const exchange = 'packaroo.events';
+//     const content = Buffer.from(JSON.stringify(message));
     
-    try {
-      channel.publish(exchange, routingKey, content, {
-        contentType: 'application/json',
-        persistent: true
-      });
+//     try {
+//       channel.publish(exchange, routingKey, content, {
+//         contentType: 'application/json',
+//         persistent: true
+//       });
       
-      logger.info(`Message published to ${exchange} with routing key ${routingKey}`);
-    } catch (error) {
-      logger.error('Failed to publish message:', error);
-      throw error;
-    }
-  }
-}
+//       logger.info(`Message published to ${exchange} with routing key ${routingKey}`);
+//     } catch (error) {
+//       logger.error('Failed to publish message:', error);
+//       throw error;
+//     }
+//   }
+// }

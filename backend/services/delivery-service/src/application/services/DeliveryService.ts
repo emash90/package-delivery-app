@@ -5,12 +5,15 @@ import { IDeliveryRepository } from '../../domain/repositories/IDeliveryReposito
 import { GetDriverDeliveriesUseCase } from '../../domain/usecases/delivery/GetDriverDeliveriesUseCase';
 import { GetOwnerDeliveriesUseCase } from '../../domain/usecases/delivery/GetOwnerDeliveriesUseCase';
 import { UpdateDeliveryStatusUseCase } from '../../domain/usecases/delivery/UpdateDeliveryStatusUseCase';
-import { MessagePublisher } from '../../infrastructure/messageBroker';
+import { MessagePublisher } from '../../infrastructure/messageBroker/MessagePublisher'
+import { GetPendingDeliveriesUseCase } from '../../domain/usecases/delivery/GetPendingDeliveriesUseCase'
+
 
 export class DeliveryService implements IDeliveryService {
   private getDriverDeliveriesUseCase: GetDriverDeliveriesUseCase;
   private getOwnerDeliveriesUseCase: GetOwnerDeliveriesUseCase;
   private updateDeliveryStatusUseCase: UpdateDeliveryStatusUseCase;
+  private getPendingDeliveriesUseCase: GetPendingDeliveriesUseCase;
   
   constructor(
     private deliveryRepository: IDeliveryRepository,
@@ -22,6 +25,7 @@ export class DeliveryService implements IDeliveryService {
       deliveryRepository,
       messagePublisher
     );
+    this.getPendingDeliveriesUseCase = new GetPendingDeliveriesUseCase(deliveryRepository);
   }
   
   async getDriverDeliveries(driverId: string): Promise<Delivery[]> {
@@ -30,6 +34,10 @@ export class DeliveryService implements IDeliveryService {
   
   async getOwnerDeliveries(ownerId: string): Promise<Delivery[]> {
     return this.getOwnerDeliveriesUseCase.execute(ownerId);
+  }
+
+  async getPendingDeliveries(status: String): Promise<Delivery[]> {
+    return this.getPendingDeliveriesUseCase.execute();
   }
   
   async startDelivery(deliveryId: string, driverId: string): Promise<Delivery | null> {

@@ -28,7 +28,7 @@ mongoose.connect(MONGODB_URI)
 
 // Setup message broker
 setupMessageBroker().catch(error => {
-  logger.error('RabbitMQ connection error:', error);
+  logger.error('RabbitMQ connection error...', error);
   process.exit(1);
 });
 

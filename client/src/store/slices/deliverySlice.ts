@@ -11,11 +11,21 @@ export interface Delivery {
   timeWindow: string;
   status: string;
   distance: string;
+  trackingId: string;
+  createdAt: string;
+  updatedAt: string;
+  recipientName: string;
+  recipientAddress: string;
+  recipientPhone: string;
+  issue: string;
+  driverId: string;
+  ownerId: string;
 }
 
 interface DeliveryState {
   driverDeliveries: Delivery[];
   ownerDeliveries: Delivery[];
+  pendingDeliveries: Delivery[]; 
   isLoading: boolean;
   error: string | null;
 }
@@ -23,6 +33,7 @@ interface DeliveryState {
 const initialState: DeliveryState = {
   driverDeliveries: [],
   ownerDeliveries: [],
+  pendingDeliveries: [],
   isLoading: false,
   error: null,
 };
@@ -34,6 +45,17 @@ export const fetchDriverDeliveries = createAsyncThunk(
       return await deliveryApi.getDriverDeliveries();
     } catch (error) {
       return rejectWithValue('Failed to fetch driver deliveries.');
+    }
+  }
+);
+
+export const fetchPendingDeliveries = createAsyncThunk(
+  'deliveries/fetchPending',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await deliveryApi.getPendingDeliveries();
+    } catch (error) {
+      return rejectWithValue('Failed to fetch pending deliveries.');
     }
   }
 );
@@ -120,6 +142,18 @@ const deliverySlice = createSlice({
         if (index !== -1) {
           state.driverDeliveries[index] = action.payload;
         }
+      })
+      .addCase(fetchPendingDeliveries.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPendingDeliveries.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.pendingDeliveries = action.payload;
+      })
+      .addCase(fetchPendingDeliveries.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       });
   },
 });

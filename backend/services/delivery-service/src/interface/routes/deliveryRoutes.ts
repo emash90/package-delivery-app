@@ -4,7 +4,7 @@ import { DeliveryController } from '../controllers/deliveryController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { DeliveryService } from '../../application/services/DeliveryService';
 import { DeliveryRepository } from '../../infrastructure/repositories/DeliveryRepository';
-import { MessagePublisher } from '../../infrastructure/messageBroker';
+import { MessagePublisher } from '../../infrastructure/messageBroker/MessagePublisher'
 
 const router = Router();
 const deliveryRepository = new DeliveryRepository();
@@ -13,6 +13,7 @@ const deliveryService = new DeliveryService(deliveryRepository, messagePublisher
 const deliveryController = new DeliveryController(deliveryService);
 
 // Driver routes
+router.get('/', authMiddleware, deliveryController.getPendingDeliveries)
 router.get('/driver', authMiddleware, deliveryController.getDriverDeliveries);
 router.post('/:id/start', authMiddleware, deliveryController.startDelivery);
 router.post('/:id/complete', authMiddleware, deliveryController.completeDelivery);

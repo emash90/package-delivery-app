@@ -16,6 +16,7 @@ export interface Delivery {
   recipientPhone: string;
   notes?: string;
   issue?: string;
+  trackingId?: string;
   distance?: number;
   createdAt?: Date;
   updatedAt?: Date;

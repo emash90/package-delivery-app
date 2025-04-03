@@ -9,19 +9,25 @@ interface DeliveryDocument extends Document, Omit<Delivery, 'id'> {
 const deliverySchema = new Schema(
   {
     packageId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Package',
       required: true,
     },
     driverId: {
       type: String,
     },
     ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    trackingId: {
       type: String,
       required: true,
     },
     status: {
       type: String,
-      enum: ['pending', 'assigned', 'in transit', 'delivered', 'failed'],
+      enum: ['pending', 'processing', 'in transit', 'delivered', 'failed'],
       default: 'pending',
       required: true,
     },
