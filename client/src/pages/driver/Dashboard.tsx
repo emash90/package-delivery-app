@@ -24,7 +24,9 @@ import { fetchPendingDeliveries, startDelivery, completeDelivery } from '@/store
 import { format } from 'date-fns';
 
 const DriverDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'my' | 'pending'>('my'); // Updated tab names
+  const [activeTab, setActiveTab] = useState<'my' | 'pending'>('my');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDelivery, setSelectedDelivery] = useState<any>(null); // Store the delivery to start
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -32,12 +34,11 @@ const DriverDashboard = () => {
   const { pendingDeliveries, isLoading: deliveriesLoading } = useAppSelector(state => state.deliveries);
   const user = useAppSelector(state => state.auth.user);
 
-
   useEffect(() => {
     dispatch(fetchPendingDeliveries());
   }, [dispatch]);
 
-  const handleStartDelivery = (deliveryId: string) => {
+  const handleStartDeliveryClick = (delivery: any) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -47,8 +48,14 @@ const DriverDashboard = () => {
       navigate('/login');
       return;
     }
+    setSelectedDelivery(delivery);
+    setIsModalOpen(true); // Open the confirmation modal
+  };
 
-    dispatch(startDelivery(deliveryId))
+  const handleConfirmStartDelivery = () => {
+    if (!selectedDelivery) return;
+
+    dispatch(startDelivery(selectedDelivery.id))
       .unwrap()
       .then(() => {
         toast({
@@ -56,6 +63,10 @@ const DriverDashboard = () => {
           description: "You have successfully started this delivery",
           variant: "success",
         });
+        setIsModalOpen(false); // Close the modal
+        setSelectedDelivery(null); // Clear the selected delivery
+        dispatch(fetchPendingDeliveries()); // Refresh the deliveries list
+        setActiveTab('my'); // Switch to "My Deliveries" tab
       })
       .catch((error) => {
         toast({
@@ -96,11 +107,18 @@ const DriverDashboard = () => {
   };
 
   // Stats calculation
-  const myDeliveries = pendingDeliveries.filter(d => d.driverId === user?.id); // Driver's deliveries
-  const availablePending = pendingDeliveries.filter(d => !d.driverId && d.status === 'pending'); // Unassigned pending deliveries
+  const myDeliveries = pendingDeliveries.filter(d => d.driverId === user?.id);
+  const availablePending = pendingDeliveries.filter(d => !d.driverId && d.status === 'pending');
   const completedDeliveries = myDeliveries.filter(d => d.status === 'delivered').length;
   const totalPending = availablePending.length;
   const activeDeliveries = myDeliveries.filter(d => d.status === 'in transit').length;
+
+  // Dummy ETA calculation (replace with real logic if available)
+  const calculateETA = (delivery: any) => {
+    const estimatedDeliveryTime = new Date(delivery.estimatedDeliveryTime);
+    const etaDate = new Date(estimatedDeliveryTime.getTime() + 6 * 60 * 60 * 1000); //add a 6 hour window of delivery
+    return format(etaDate, 'MMM d, yyyy HH:mm');
+  };
 
   return (
     <PageTransition>
@@ -197,7 +215,6 @@ const DriverDashboard = () => {
                         className="p-6 hover:shadow-md transition-all border border-gray-100 hover:border-primary/20"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {/* Left Section: Tracking and Status */}
                           <div>
                             <p className="text-sm font-medium text-gray-500 mb-1">
                               Tracking ID: {delivery.trackingId}
@@ -211,8 +228,6 @@ const DriverDashboard = () => {
                               {delivery.status.charAt(0).toUpperCase() + delivery.status.slice(1)}
                             </p>
                           </div>
-
-                          {/* Middle Section: Recipient Details */}
                           <div>
                             <div className="flex items-center gap-2 mb-2">
                               <User className="h-4 w-4 text-gray-500" />
@@ -227,8 +242,6 @@ const DriverDashboard = () => {
                               <p className="text-sm text-gray-700">{delivery.recipientPhone}</p>
                             </div>
                           </div>
-
-                          {/* Right Section: Dates and Actions */}
                           <div className="flex flex-col justify-between">
                             <div>
                               <div className="flex items-center gap-2 mb-2">
@@ -240,7 +253,7 @@ const DriverDashboard = () => {
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-gray-500" />
                                 <p className="text-sm text-gray-700">
-                                  Updated: {format(new Date(delivery.updatedAt), 'MMM d, yyyy HH:mm')}
+                                  Delivery Time: {format(new Date(delivery.estimatedDeliveryTime), 'MMM d, yyyy HH:mm')}
                                 </p>
                               </div>
                             </div>
@@ -303,7 +316,6 @@ const DriverDashboard = () => {
                         className="p-6 hover:shadow-md transition-all border border-gray-100 hover:border-primary/20"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {/* Left Section: Tracking and Status */}
                           <div>
                             <p className="text-sm font-medium text-gray-500 mb-1">
                               Tracking ID: {delivery.trackingId}
@@ -312,8 +324,6 @@ const DriverDashboard = () => {
                               Pending
                             </p>
                           </div>
-
-                          {/* Middle Section: Recipient Details */}
                           <div>
                             <div className="flex items-center gap-2 mb-2">
                               <User className="h-4 w-4 text-gray-500" />
@@ -328,8 +338,6 @@ const DriverDashboard = () => {
                               <p className="text-sm text-gray-700">{delivery.recipientPhone}</p>
                             </div>
                           </div>
-
-                          {/* Right Section: Dates and Actions */}
                           <div className="flex flex-col justify-between">
                             <div>
                               <div className="flex items-center gap-2 mb-2">
@@ -341,14 +349,14 @@ const DriverDashboard = () => {
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-gray-500" />
                                 <p className="text-sm text-gray-700">
-                                  Updated: {format(new Date(delivery.updatedAt), 'MMM d, yyyy HH:mm')}
+                                  Estimated Delivery: {format(new Date(delivery.estimatedDeliveryTime), 'MMM d, yyyy HH:mm')}
                                 </p>
                               </div>
                             </div>
                             <div className="flex gap-2 mt-4 justify-end">
                               <AnimatedButton
                                 size="sm"
-                                onClick={() => handleStartDelivery(delivery.id)}
+                                onClick={() => handleStartDeliveryClick(delivery)}
                                 className="bg-primary hover:bg-primary/90"
                               >
                                 Start Delivery
@@ -367,6 +375,49 @@ const DriverDashboard = () => {
             )}
           </div>
         </main>
+
+        {/* Confirmation Modal */}
+        {isModalOpen && selectedDelivery && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Confirm Start Delivery</h3>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  <strong>Tracking ID:</strong> {selectedDelivery.trackingId}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Recipient:</strong> {selectedDelivery.recipientName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Address:</strong> {selectedDelivery.recipientAddress}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Contact:</strong> {selectedDelivery.recipientPhone}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Estimated Time of Arrival (ETA):</strong> {calculateETA(selectedDelivery)}
+                </p>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <AnimatedButton
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                >
+                  Cancel
+                </AnimatedButton>
+                <AnimatedButton
+                  size="sm"
+                  onClick={handleConfirmStartDelivery}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  Confirm
+                </AnimatedButton>
+              </div>
+            </div>
+          </div>
+        )}
         
         <Footer />
       </div>

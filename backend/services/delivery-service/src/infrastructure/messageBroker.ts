@@ -10,7 +10,7 @@ import { MessagePublisher } from './messageBroker/MessagePublisher'
 let deliveryRepository: IDeliveryRepository;
 
 
-let channel: amqp.Channel;
+export let channel: amqp.Channel;
 
 export async function setupMessageBroker(repo: IDeliveryRepository) {
   try {
@@ -66,6 +66,9 @@ export async function setupMessageBroker(repo: IDeliveryRepository) {
             recipientName: content.recipientName,
             recipientAddress: content.recipientAddress,
             recipientPhone: content.recipientContact,
+            estimatedDeliveryTime: content.estimatedDeliveryTime,
+            images: content.images,
+            lastUpdate: new Date()
           };
 
           const createdDelivery = await deliveryRepository.create(newDelivery);

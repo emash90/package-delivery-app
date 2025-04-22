@@ -3,6 +3,7 @@ import { Package } from '../../domain/entities/Package';
 import { IPackageRepository } from '../../domain/repositories/IPackageRepository';
 import { PackageModel } from '../models/PackageModel';
 import { logger } from '../logger';
+import { Types } from 'mongoose';
 
 export class PackageRepository implements IPackageRepository {
   async findAll(): Promise<Package[]> {
@@ -27,7 +28,11 @@ export class PackageRepository implements IPackageRepository {
 
   async findByOwnerId(ownerId: string): Promise<Package[]> {
     try {
-      const packages = await PackageModel.find({ ownerId });
+      const objectId = new Types.ObjectId(ownerId);
+      console.log("object id", objectId)
+      const packages = await PackageModel.find({ 
+        userId: objectId
+       });
       return packages.map(pkg => pkg.toJSON() as Package);
     } catch (error) {
       logger.error('Error finding packages by owner ID:', error);

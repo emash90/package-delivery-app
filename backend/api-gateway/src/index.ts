@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(express.json());
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health_check', (req, res) => {
   res.status(200).json({ status: 'API Gateway is running' });
 });
 

@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import BackButton from '@/components/BackButton';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -103,16 +104,7 @@ const PackageDetail = () => {
         
         <main className="flex-grow pt-24 pb-20">
           <div className="container mx-auto px-6">
-            <div className="mb-6">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Dashboard
-              </Button>
-            </div>
+            <BackButton className="mb-6" />
             
             <div className="flex flex-col md:flex-row gap-8">
               <div className="w-full md:w-2/3">

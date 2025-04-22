@@ -90,7 +90,7 @@ services:
     container_name: packaroo-api-gateway
     restart: always
     ports:
-      - "5000:5000"
+      - "4000:4000"
     volumes:
       - ./backend/api-gateway:/app
       - /app/node_modules
@@ -103,7 +103,7 @@ services:
       - PACKAGE_SERVICE_URL=http://package-service:5002
       - DELIVERY_SERVICE_URL=http://delivery-service:5003
       - JWT_SECRET=kim2016
-      - PORT=5000
+      - PORT=4000
     networks:
       - packaroo-network
 

@@ -14,7 +14,7 @@ export class CreatePackageUseCase {
     packageData.trackingId = `PKG${Date.now()}${Math.floor(Math.random() * 1000)}`;
     
     const newPackage = await this.packageRepository.create(packageData);
-    
+    console.log("newPackage", newPackage)
     // Publish package created event
     await this.messagePublisher.publish('package.created', {
       id: newPackage._id,
@@ -29,7 +29,10 @@ export class CreatePackageUseCase {
       dimensions: newPackage.dimensions,
       recipientName: newPackage.recipientName,
       recipientAddress: newPackage.location,
-      recipientContact: newPackage.recipientContact
+      recipientContact: newPackage.recipientContact,
+      estimatedDeliveryTime: newPackage.eta,
+      lastUpdate: newPackage.eta ? new Date(newPackage.eta) : null,
+      images: newPackage.images
     });
     
     return newPackage;

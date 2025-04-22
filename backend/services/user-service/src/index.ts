@@ -20,7 +20,7 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/packaroo';
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    logger.info('Connected to MongoDB!!!');
+    logger.info('Connected to MongoDB...');
   })
   .catch((error) => {
     logger.error('MongoDB connection error:', error);

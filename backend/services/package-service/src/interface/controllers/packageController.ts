@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/authMiddleware';
 import { logger } from '../../infrastructure/logger';
 import { IPackageService } from '../../application/services/IPackageService';
+import { Types } from 'mongoose';
 
 export class PackageController {
   constructor(private packageService: IPackageService) {}
@@ -49,23 +50,52 @@ export class PackageController {
     }
   };
 
+  // getPackagesByOwnerId = async (req: AuthRequest, res: Response) => {
+  //   try {
+  //     const userId = req.params.userId;
+  //     console.log("user id", userId)
+  //     const packages = await this.packageService.getPackagesByOwnerId(userId);
+      
+  //     if (!packages || packages.length === 0) {
+  //       console.log("No packages found for the user")
+  //       logger.error('No packages found for the user')
+  //       return res.status(404).json({ message: 'No packages found for the user' });
+  //     }
+  //     console.log("packages", packages)
+  //     res.status(200).json(packages);
+  //   } catch (error) {
+  //     logger.error('Error fetching packages by user ID')
+  //     res.status(500).json({ message: 'Failed to fetch packages' });
+  //   }
+  // };
+  
+
   getPackagesByOwnerId = async (req: AuthRequest, res: Response) => {
     try {
-      const userId = req.body.userId;
+      const userId = req.params.userId;
+
+        // Validate userId
+        if (!userId || typeof userId !== 'string') {
+          logger.warn('Invalid or missing userId in request:', { userId });
+          return res.status(400).json({ message: 'User ID is required and must be a string' });
+        }
+  
+        // Optional: Validate as a hex string (24 characters)
+        if (!Types.ObjectId.isValid(userId)) {
+          logger.warn('Invalid userId format:', { userId });
+          return res.status(400).json({ message: 'Invalid user ID format' });
+        }
       
+
       const packages = await this.packageService.getPackagesByOwnerId(userId);
-      
-      if (!packages || packages.length === 0) {
-        return res.status(404).json({ message: 'No packages found for the user' });
-      }
-      
-      res.status(200).json(packages);
+
+      // Return packages (empty array if none found)
+      res.status(200).json(packages || []);
     } catch (error) {
-      logger.error('Error fetching packages by user ID')
+      logger.error('Error fetching packages by user ID:', error);
       res.status(500).json({ message: 'Failed to fetch packages' });
     }
   };
-  
 
   createPackage = async (req: AuthRequest, res: Response) => {
     try {

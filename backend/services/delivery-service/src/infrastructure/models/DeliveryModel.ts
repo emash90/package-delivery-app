@@ -58,16 +58,22 @@ const deliverySchema = new Schema(
     notes: {
       type: String,
     },
+    images: [
+      {
+        type: String,
+      },
+    ],
     issue: {
       type: String,
     },
     distance: {
       type: Number,
-    }
+    },
+    lastUpdate: { type: Date, default: Date.now }
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Map the MongoDB _id to id

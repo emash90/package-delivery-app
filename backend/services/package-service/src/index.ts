@@ -28,7 +28,7 @@ mongoose.connect(MONGODB_URI)
 
 // Setup message broker
 setupMessageBroker().catch(error => {
-  logger.error('RabbitMQ connection error...', error);
+  logger.error('RabbitMQ connection error', error);
   process.exit(1);
 });
 
@@ -37,7 +37,7 @@ app.use('/api/packages', packageRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'Package service is running' });
+  res.status(200).json({ status: 'Package service is running...' });
 });
 
 // Start server

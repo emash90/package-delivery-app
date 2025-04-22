@@ -13,6 +13,7 @@ export interface Delivery {
   distance: string;
   trackingId: string;
   createdAt: string;
+  estimatedDeliveryTime: string;
   updatedAt: string;
   recipientName: string;
   recipientAddress: string;

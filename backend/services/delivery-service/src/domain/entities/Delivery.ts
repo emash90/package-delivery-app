@@ -8,6 +8,7 @@ export interface Delivery {
   ownerId: string;
   status: DeliveryStatus;
   startTime?: Date;
+  images?: string[];
   endTime?: Date;
   estimatedDeliveryTime?: Date;
   actualDeliveryTime?: Date;
@@ -20,4 +21,5 @@ export interface Delivery {
   distance?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  lastUpdate?: Date;
 }

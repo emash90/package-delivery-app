@@ -4,6 +4,7 @@ import PageTransition from '@/components/PageTransition';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import CreatePackageForm from '@/components/CreatePackageForm';
+import BackButton from '@/components/BackButton';
 
 const CreatePackage = () => {
   return (
@@ -13,6 +14,7 @@ const CreatePackage = () => {
         
         <main className="flex-grow pt-24 pb-20">
           <div className="container mx-auto px-6">
+            < BackButton className="mb-6" />
             <CreatePackageForm />
           </div>
         </main>
