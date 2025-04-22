@@ -320,7 +320,11 @@ const PackageDetail = () => {
                 <GlassCard className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Actions</h3>
                   <div className="space-y-3">
-                    <Button className="w-full" variant="outline">Track Package</Button>
+                    <Button className="w-full" variant="outline"
+                      onClick={() => navigate('/track')}
+                    >
+                      Track Package
+                    </Button>
                     <Button className="w-full" variant="outline">Contact Carrier</Button>
                     <Button className="w-full" variant="destructive">Report Issue</Button>
                     <Button 

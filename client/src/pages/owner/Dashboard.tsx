@@ -282,7 +282,7 @@ const OwnerDashboard = () => {
                             
                             {/* Package Info */}
                             <div className="md:w-[35%] mb-4 md:mb-0">
-                              <p className="text-sm font-medium text-muted-foreground mb-1">{pkg.id}</p>
+                              <p className="text-sm font-medium text-muted-foreground mb-1">{pkg.trackingId}</p>
                               <h3 className="font-medium text-lg">{pkg.name}</h3>
                             </div>
                             
@@ -373,7 +373,7 @@ const OwnerDashboard = () => {
               <h2 className="text-xl font-semibold mb-6">Quick Actions</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { title: "Track a New Package", icon: <Search className="h-5 w-5" />, url: "/" },
+                  { title: "Track a New Package", icon: <Search className="h-5 w-5" />, url: "/track" },
                   { title: "View Delivery History", icon: <Clock className="h-5 w-5" />, url: "/" },
                   { title: "Manage Notifications", icon: <Bell className="h-5 w-5" />, url: "/" },
                   { title: "Create New Package", icon: <Package className="h-5 w-5" />, url: "/owner/create-package" }

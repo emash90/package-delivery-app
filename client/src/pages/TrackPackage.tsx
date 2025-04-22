@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { packageApi } from '@/services/api';
+import BackButton from '@/components/BackButton';
 
 // Schema for tracking form validation
 const trackingFormSchema = z.object({
@@ -41,7 +42,7 @@ const TrackPackage = () => {
   // Package tracking query
   const { data: packageData, isLoading, error, refetch } = useQuery({
     queryKey: ['package', trackingId],
-    queryFn: () => trackingId ? packageApi.getById(trackingId) : null,
+    queryFn: () => trackingId ? packageApi.trackById(trackingId) : null,
     enabled: !!trackingId,
   });
 
@@ -66,14 +67,32 @@ const TrackPackage = () => {
     }
   };
 
+  const getProgressPercentage = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'processing':
+        return 10;
+      case 'in transit':
+        return 50;
+      case 'out for delivery':
+        return 75;
+      case 'delivered':
+        return 100;
+      case 'cancelled':
+        return 0;
+      default:
+        return 0;
+    }
+  };
+
+
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col">
         <NavBar />
-        
         <main className="flex-grow pt-24 pb-16">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
+              <BackButton />
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold mb-2">Track Your Package</h1>
                 <p className="text-muted-foreground">
@@ -187,7 +206,7 @@ const TrackPackage = () => {
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
                               <div 
                                 className="bg-primary h-2.5 rounded-full" 
-                                style={{ width: `${packageData.progress}%` }}
+                                style={{ width: `${getProgressPercentage(packageData.status)}%` }}
                               ></div>
                             </div>
                             <div className="flex justify-between text-xs text-muted-foreground mt-1">
