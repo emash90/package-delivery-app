@@ -14,7 +14,13 @@ export let channel: amqp.Channel;
 
 export async function setupMessageBroker(repo: IDeliveryRepository) {
   try {
-    const RABBITMQ_URI = process.env.RABBITMQ_URI || 'amqp://localhost:5672';
+    const RABBITMQ_URI = process.env.RABBITMQ_URI;
+    if (!RABBITMQ_URI) {
+      throw new Error('RABBITMQ_URI environment variable is not set');
+    }
+
+    logger.info(`Connecting to RabbitMQ at: ${RABBITMQ_URI}`);
+    
     const connection = await amqp.connect(RABBITMQ_URI);
     deliveryRepository = repo;
     channel = await connection.createChannel();
