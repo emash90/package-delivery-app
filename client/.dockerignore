@@ -1,3 +1,13 @@
-Dockerfile
-node_modules
-.env
+node_modules/
+.git/
+*.log
+build/
+dist/
+.next/
+.DS_Store
+docker-compose.yml
+Dockerfile*
+README.md
+.vscode/
+.idea/
+*.swp
