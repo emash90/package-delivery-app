@@ -1,16 +1,30 @@
 version: '3.8'
 
 services:
+  # MongoDB
+  mongo:
+    image: mongo:6
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - packaroo-network
+    env_file:
+      - .env
+
   # RabbitMQ Message Broker
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: packaroo-rabbitmq
     ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI
+      - "${RABBITMQ_AMQP_PORT}:${RABBITMQ_AMQP_PORT}"
+      - "${RABBITMQ_UI_PORT}:${RABBITMQ_UI_PORT}"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 30s
@@ -21,27 +35,27 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - packaroo-network
+    env_file:
+      - .env
 
   # User Service
   user-service:
     build:
       context: ./backend/services/user-service
       dockerfile: Dockerfile
-    container_name: packaroo-user-service
     restart: always
     ports:
-      - "5001:5001"
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     volumes:
       - ./backend/services/user-service:/app
       - /app/node_modules
     depends_on:
+      mongo:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
-    environment:
-      - MONGODB_URI=mongodb://host.docker.internal:27017/packaroo-testdb
-      - RABBITMQ_URI=amqp://rabbitmq:5672
-      - JWT_SECRET=kim2016
-      - PORT=5001
+    env_file:
+      - .env
     networks:
       - packaroo-network
 
@@ -50,21 +64,19 @@ services:
     build:
       context: ./backend/services/package-service
       dockerfile: Dockerfile
-    container_name: packaroo-package-service
     restart: always
     ports:
-      - "5002:5002"
+      - "${PACKAGE_SERVICE_PORT}:${PACKAGE_SERVICE_PORT}"
     volumes:
       - ./backend/services/package-service:/app
       - /app/node_modules
     depends_on:
+      mongo:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
-    environment:
-      - MONGODB_URI=mongodb://host.docker.internal:27017/packaroo-testdb
-      - RABBITMQ_URI=amqp://rabbitmq:5672
-      - JWT_SECRET=kim2016
-      - PORT=5002
+    env_file:
+      - .env
     networks:
       - packaroo-network
 
@@ -73,33 +85,30 @@ services:
     build:
       context: ./backend/services/delivery-service
       dockerfile: Dockerfile
-    container_name: packaroo-delivery-service
     restart: always
     ports:
-      - "5003:5003"
+      - "${DELIVERY_SERVICE_PORT}:${DELIVERY_SERVICE_PORT}"
     volumes:
       - ./backend/services/delivery-service:/app
       - /app/node_modules
     depends_on:
+      mongo:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
-    environment:
-      - MONGODB_URI=mongodb://host.docker.internal:27017/packaroo-testdb
-      - RABBITMQ_URI=amqp://rabbitmq:5672
-      - JWT_SECRET=kim2016
-      - PORT=5003
+    env_file:
+      - .env
     networks:
-      - packaroo-network
+      - packaroo-network 
 
   # API Gateway
   api-gateway:
     build:
       context: ./backend/api-gateway
       dockerfile: Dockerfile
-    container_name: packaroo-api-gateway
     restart: always
     ports:
-      - "4000:4000"
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     volumes:
       - ./backend/api-gateway:/app
       - /app/node_modules
@@ -107,34 +116,30 @@ services:
       - user-service
       - package-service
       - delivery-service
-    environment:
-      - USER_SERVICE_URL=http://user-service:5001
-      - PACKAGE_SERVICE_URL=http://package-service:5002
-      - DELIVERY_SERVICE_URL=http://delivery-service:5003
-      - JWT_SECRET=kim2016
-      - PORT=4000
+    env_file:
+      - .env
     networks:
-      - packaroo-network
+      - packaroo-network 
 
   # Frontend
   frontend:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: packaroo-frontend
     restart: always
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT}:3000"
     volumes:
       - ./client:/app
       - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=1
+    env_file:
+      - .env
     networks:
-      - packaroo-network
+      - packaroo-network 
 
 volumes:
   rabbitmq_data:
+  mongo_data:
 
 networks:
   packaroo-network:

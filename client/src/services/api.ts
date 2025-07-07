@@ -1,5 +1,7 @@
 
-const API_URL = 'http://localhost:4000/api'; // API Gateway URL
+// const API_URL = 'http://localhost:4000/api'; // API Gateway URL
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Helper function for making API requests
 const fetchData = async (endpoint: string, options = {}) => {
@@ -16,12 +18,6 @@ const fetchData = async (endpoint: string, options = {}) => {
     }
     
 
-
-    console.log("token:", token)
-    console.log("headers:", headers)
-    console.log("options:", options)
-    console.log("API_URL:", API_URL)
-    console.log("endpoint:", endpoint)
     const response = await fetch(`${API_URL}${endpoint}`, {
       headers,
       ...options,
@@ -34,7 +30,7 @@ const fetchData = async (endpoint: string, options = {}) => {
     
     return await response.json();
   } catch (error) {
-    console.error('API request failed:', error);
+    // console.error('API request failed:', error);
     throw error;
   }
 };

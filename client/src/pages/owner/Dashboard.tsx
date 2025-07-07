@@ -63,7 +63,6 @@ const OwnerDashboard = () => {
     // You would add time filter logic here based on your actual data structure
     return matchesSearch && matchesStatus;
   });
-  console.log("filtered", filteredPackages)
 
   const handleDeletePackage = async (packageId: string) => {
     if (window.confirm('Are you sure you want to delete this package?')) {
