@@ -24,6 +24,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { register as registerUser } from '@/store/slices/authSlice';
 import type { UserRole } from '@/store/slices/authSlice';
 
+
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -55,6 +56,7 @@ const Register = () => {
     },
   });
 
+
   // If the selected role changes, update the form
   useEffect(() => {
     if (selectedRole) {
@@ -64,7 +66,6 @@ const Register = () => {
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
-    console.log("data", data)
     try {
       await dispatch(registerUser({
         name: data.name,
@@ -88,10 +89,9 @@ const Register = () => {
         navigate("/admin/dashboard");
       }
     } catch (error) {
-      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: "An error occurred during registration.",
+        description: error || 'Something went wrong. Please try again.',
         variant: "destructive",
       });
     } finally {
@@ -141,10 +141,11 @@ const Register = () => {
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input 
+                          <Input
                             placeholder="you@example.com" 
-                            className="pl-10" 
-                            {...field} 
+                            autoComplete="off"
+                            className="pl-10"
+                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -164,6 +165,7 @@ const Register = () => {
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
+                            autoComplete="new-password"
                             className="pl-10" 
                             {...field} 
                           />
@@ -185,6 +187,7 @@ const Register = () => {
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
+                            autoComplete="new-password"
                             className="pl-10" 
                             {...field} 
                           />

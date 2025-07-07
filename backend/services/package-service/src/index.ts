@@ -9,7 +9,7 @@ import { setupMessageBroker } from './infrastructure/messageBroker';
 require('dotenv').config()
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PACKAGE_SERVICE_PORT || 3002;
 
 // Middleware
 app.use(cors());

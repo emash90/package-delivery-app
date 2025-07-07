@@ -35,10 +35,9 @@ export const login = createAsyncThunk(
     try {
       const response = await userApi.login(credentials);
       localStorage.setItem('token', response.token);
-      console.log("response", response)
       return response;
     } catch (error) {
-      return rejectWithValue('Login failed. Please check your credentials.');
+      return rejectWithValue((error as Error).message)
     }
   }
 );
@@ -51,7 +50,7 @@ export const register = createAsyncThunk(
       localStorage.setItem('token', response.token);
       return response;
     } catch (error) {
-      return rejectWithValue('Registration failed. Please try again.');
+      return rejectWithValue((error as Error).message);
     }
   }
 );

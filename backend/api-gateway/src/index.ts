@@ -11,10 +11,12 @@ require('dotenv').config();
 
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.GATEWAY_PORT || 4000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+}));
 app.use(helmet());
 app.use(express.json());
 
