@@ -1,6 +1,8 @@
 
 import { Request, Response } from 'express';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
+import { RoleRepository } from '../../infrastructure/repositories/RoleRepository';
+import { PermissionRepository } from '../../infrastructure/repositories/PermissionRepository';
 import { PasswordService } from '../../infrastructure/services/PasswordService';
 import { TokenService } from '../../infrastructure/services/TokenService';
 import { MessagePublisher } from '../../infrastructure/messageBroker';
@@ -11,12 +13,14 @@ import { logger } from '../../infrastructure/logger';
 
 // Initialize repositories and services
 const userRepository = new UserRepository();
+const roleRepository = new RoleRepository();
+const permissionRepository = new PermissionRepository();
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
 const messagePublisher = new MessagePublisher();
 
 // Initialize use cases
-const loginUseCase = new LoginUseCase(userRepository, passwordService, tokenService);
+const loginUseCase = new LoginUseCase(userRepository, roleRepository, permissionRepository, passwordService, tokenService);
 const registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, messagePublisher);
 const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
 
@@ -46,7 +50,8 @@ export const userController = {
         name,
         email,
         password,
-        role
+        role,
+        status: 'active'
       });
       
       if (!user) {

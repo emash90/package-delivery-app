@@ -2,6 +2,8 @@
 import { Router } from 'express';
 import { DeliveryController } from '../controllers/deliveryController';
 import { authMiddleware } from '../middlewares/authMiddleware';
+import { requirePermission, requireAnyPermission, checkDeliveryOwnership } from '../middlewares/rbacMiddleware';
+import { PERMISSIONS } from '../../shared/constants/permissions';
 import { DeliveryService } from '../../application/services/DeliveryService';
 import { DeliveryRepository } from '../../infrastructure/repositories/DeliveryRepository';
 import { MessagePublisher } from '../../infrastructure/messageBroker/MessagePublisher'
@@ -13,13 +15,13 @@ const deliveryService = new DeliveryService(deliveryRepository, messagePublisher
 const deliveryController = new DeliveryController(deliveryService);
 
 // Driver routes
-router.get('/', authMiddleware, deliveryController.getPendingDeliveries)
-router.get('/driver', authMiddleware, deliveryController.getDriverDeliveries);
-router.post('/:id/start', authMiddleware, deliveryController.startDelivery);
-router.post('/:id/complete', authMiddleware, deliveryController.completeDelivery);
-router.post('/:id/issue', authMiddleware, deliveryController.reportIssue);
+router.get('/', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), deliveryController.getPendingDeliveries)
+router.get('/driver', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), deliveryController.getDriverDeliveries);
+router.post('/:id/start', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_CLAIM), deliveryController.startDelivery);
+router.post('/:id/complete', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_COMPLETE), deliveryController.completeDelivery);
+router.post('/:id/issue', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_UPDATE), deliveryController.reportIssue);
 
 // Owner routes
-router.get('/owner', authMiddleware, deliveryController.getOwnerDeliveries);
+router.get('/owner', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), checkDeliveryOwnership, deliveryController.getOwnerDeliveries);
 
 export { router as deliveryRoutes };

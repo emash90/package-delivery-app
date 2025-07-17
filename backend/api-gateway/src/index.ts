@@ -5,7 +5,9 @@ import helmet from 'helmet';
 import proxy from 'express-http-proxy';
 import { logger } from './logger';
 import { authMiddleware } from './middlewares/authMiddleware';
+import { enrichUserWithPermissions, requirePermission, requireAnyPermission } from './middlewares/rbacMiddleware';
 import { publicRoutes } from './config/routes';
+import { PERMISSIONS, ROUTE_PERMISSIONS } from './config/permissions';
 
 require('dotenv').config();
 
@@ -46,22 +48,58 @@ app.use('/api/auth', proxy(USER_SERVICE_URL, {
   }
 }));
 
-// Protected routes
-app.use('/api/users', authMiddleware, proxy(USER_SERVICE_URL, {
+// Protected routes with centralized RBAC
+app.use('/api/users', enrichUserWithPermissions, proxy(USER_SERVICE_URL, {
   proxyReqPathResolver: (req) => {
     return `/api/users${req.url}`;
+  },
+  proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+    // Forward user info to downstream services
+    const user = (srcReq as any).user;
+    if (user) {
+      proxyReqOpts.headers = proxyReqOpts.headers || {};
+      proxyReqOpts.headers['x-user-id'] = user.id;
+      proxyReqOpts.headers['x-user-email'] = user.email;
+      proxyReqOpts.headers['x-user-role'] = user.role;
+      proxyReqOpts.headers['x-user-permissions'] = JSON.stringify(user.permissions || []);
+    }
+    return proxyReqOpts;
   }
 }));
 
-app.use('/api/packages', authMiddleware, proxy(PACKAGE_SERVICE_URL, {
+app.use('/api/packages', enrichUserWithPermissions, proxy(PACKAGE_SERVICE_URL, {
   proxyReqPathResolver: (req) => {
     return `/api/packages${req.url}`;
+  },
+  proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+    // Forward user info to downstream services
+    const user = (srcReq as any).user;
+    if (user) {
+      proxyReqOpts.headers = proxyReqOpts.headers || {};
+      proxyReqOpts.headers['x-user-id'] = user.id;
+      proxyReqOpts.headers['x-user-email'] = user.email;
+      proxyReqOpts.headers['x-user-role'] = user.role;
+      proxyReqOpts.headers['x-user-permissions'] = JSON.stringify(user.permissions || []);
+    }
+    return proxyReqOpts;
   }
 }));
 
-app.use('/api/deliveries', authMiddleware, proxy(DELIVERY_SERVICE_URL, {
+app.use('/api/deliveries', enrichUserWithPermissions, proxy(DELIVERY_SERVICE_URL, {
   proxyReqPathResolver: (req) => {
     return `/api/deliveries${req.url}`;
+  },
+  proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+    // Forward user info to downstream services
+    const user = (srcReq as any).user;
+    if (user) {
+      proxyReqOpts.headers = proxyReqOpts.headers || {};
+      proxyReqOpts.headers['x-user-id'] = user.id;
+      proxyReqOpts.headers['x-user-email'] = user.email;
+      proxyReqOpts.headers['x-user-role'] = user.role;
+      proxyReqOpts.headers['x-user-permissions'] = JSON.stringify(user.permissions || []);
+    }
+    return proxyReqOpts;
   }
 }));
 

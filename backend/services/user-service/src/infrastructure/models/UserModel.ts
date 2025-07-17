@@ -15,7 +15,15 @@ const UserSchema: Schema = new Schema(
       required: true, 
       enum: ['owner', 'driver', 'admin'], 
       default: 'owner' 
-    }
+    },
+    roleId: { type: Schema.Types.ObjectId, ref: 'Role' },
+    permissions: [{ type: Schema.Types.ObjectId, ref: 'Permission' }],
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'suspended'],
+      default: 'active'
+    },
+    lastLogin: { type: Date }
   },
   { timestamps: true }
 );

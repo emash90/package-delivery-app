@@ -42,6 +42,15 @@ export class UserRepository implements IUserRepository {
     return users.map(user => this.mapToUser(user));
   }
 
+  async findByRoleId(roleId: string): Promise<User[]> {
+    const users = await UserModel.find({ roleId });
+    return users.map(user => this.mapToUser(user));
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await UserModel.findByIdAndUpdate(id, { lastLogin: new Date() });
+  }
+
   private mapToUser(userDoc: UserDocument): User {
     return {
       id: userDoc._id.toString(),
@@ -49,6 +58,10 @@ export class UserRepository implements IUserRepository {
       email: userDoc.email,
       password: userDoc.password,
       role: userDoc.role,
+      roleId: userDoc.roleId?.toString(),
+      permissions: userDoc.permissions?.map(p => p.toString()),
+      status: userDoc.status,
+      lastLogin: userDoc.lastLogin,
       createdAt: userDoc.createdAt,
       updatedAt: userDoc.updatedAt
     };

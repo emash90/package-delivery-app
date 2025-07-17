@@ -2,16 +2,15 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-// Extend Express Request to include user
-declare global {
-  namespace Express {
-    interface Request {
-      user: {
-        id: string;
-        email: string;
-        role: string;
-      };
-    }
+// Extend Express Request to include user property
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: string;
+      email: string;
+      role: string;
+      permissions?: string[];
+    };
   }
 }
 

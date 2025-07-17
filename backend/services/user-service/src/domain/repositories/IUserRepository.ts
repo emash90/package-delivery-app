@@ -8,4 +8,6 @@ export interface IUserRepository {
   update(id: string, user: Partial<User>): Promise<User | null>;
   delete(id: string): Promise<boolean>;
   findAll(): Promise<User[]>;
+  findByRoleId(roleId: string): Promise<User[]>;
+  updateLastLogin(id: string): Promise<void>;
 }
