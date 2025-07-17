@@ -65,12 +65,15 @@ Make sure you have the following software installed on your system:
     cp .env.example .env
     ```
 
-    You can use the default values in the newly created `.env` file for a standard local setup.
+    Open the new `.env` file and review the variables. For a standard local setup, the defaults for RabbitMQ and MongoDB will work.
+    
+    **⚠️ Security Warning:** You must replace `JWT_SECRET` with a strong, randomly generated secret key.
 
     ```dotenv
     # RabbitMQ Credentials
     RABBITMQ_DEFAULT_USER=guest
     RABBITMQ_DEFAULT_PASS=guest
+    
 
     # MongoDB Connection & Credentials
     MONGO_INITDB_ROOT_USERNAME=packaroo_user
@@ -78,7 +81,7 @@ Make sure you have the following software installed on your system:
     MONGODB_URI=mongodb://packaroo_user:supersecretpassword@mongo:27017/packaroo-testdb?authSource=admin
 
     # Application Secrets
-    JWT_SECRET=a_much_stronger_and_longer_secret_key_than_kim2016
+    JWT_SECRET=REPLACE_THIS_WITH_A_32_CHAR_PLUS_RANDOM_SECURE_STRING
 
     # Service Ports
     USER_SERVICE_PORT=5001

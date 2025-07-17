@@ -1,69 +1,30 @@
-# Welcome to your Lovable project
+# Packaroo - Frontend Client
 
-## Project info
+This directory contains the source code for the Packaroo frontend application.
 
-**URL**: https://lovable.dev/projects/816e25d1-b950-497f-953c-1832c95b28a3
+## Tech Stack
+- **Framework**: React (with Vite)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS & shadcn/ui
+- **State Management**: Redux Toolkit & React Query
 
-## How can I edit this code?
+## Getting Started
 
-There are several ways of editing your application.
+The entire Packaroo application, including this frontend client, is designed to be run via Docker for a consistent development environment.
 
-**Use Lovable**
+Please refer to the **[main project README](../../README.md)** for complete setup and usage instructions.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/816e25d1-b950-497f-953c-1832c95b28a3) and start prompting.
+### Standalone Development (Optional)
 
-Changes made via Lovable will be committed automatically to this repo.
+If you wish to run the client separately from the Docker environment (e.g., for focused UI work), you can do so, provided the backend services are already running.
 
-**Use your preferred IDE**
+```bash
+# Navigate to the client directory
+cd client
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# Install dependencies
+npm install
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Run the development server
 npm run dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/816e25d1-b950-497f-953c-1832c95b28a3) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
