@@ -25,6 +25,20 @@ const fetchData = async (endpoint: string, options = {}) => {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      
+      // Handle specific error cases
+      if (response.status === 401) {
+        // Unauthorized - token might be expired
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
+      if (response.status === 403) {
+        // Forbidden - user doesn't have permission
+        throw new Error(errorData.message || 'You do not have permission to perform this action');
+      }
+      
       throw new Error(errorData.message || `API Error: ${response.status}`);
     }
     
@@ -88,6 +102,38 @@ export const userApi = {
   updateProfile: (userData: any) => fetchData('/users/profile', {
     method: 'PUT',
     body: JSON.stringify(userData)
+  }),
+  getAllUsers: () => fetchData('/users'),
+  updateUser: (userId: string, userData: any) => fetchData(`/users/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify(userData)
+  }),
+  deleteUser: (userId: string) => fetchData(`/users/${userId}`, {
+    method: 'DELETE'
+  })
+};
+
+export const roleApi = {
+  getAll: () => fetchData('/users/roles'),
+  getById: (id: string) => fetchData(`/users/roles/${id}`),
+  create: (roleData: any) => fetchData('/users/roles', {
+    method: 'POST',
+    body: JSON.stringify(roleData)
+  }),
+  update: (id: string, roleData: any) => fetchData(`/users/roles/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(roleData)
+  }),
+  delete: (id: string) => fetchData(`/users/roles/${id}`, {
+    method: 'DELETE'
+  })
+};
+
+export const permissionApi = {
+  getAll: () => fetchData('/users/permissions'),
+  create: (permissionData: any) => fetchData('/users/permissions', {
+    method: 'POST',
+    body: JSON.stringify(permissionData)
   })
 };
 

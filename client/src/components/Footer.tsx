@@ -3,8 +3,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import { Github, Twitter, Instagram, Facebook } from 'lucide-react';
+import { useUserPermission } from '@/contexts/UserPermissionContext';
 
 const Footer: React.FC = () => {
+  const { hasRole } = useUserPermission();
+  
   return (
     <footer className="bg-white border-t border-gray-100 py-12">
       <div className="container mx-auto px-6">
@@ -43,9 +46,15 @@ const Footer: React.FC = () => {
           <div className="col-span-1">
             <h3 className="font-medium text-base mb-4">For Users</h3>
             <ul className="space-y-2">
-              <li><Link to="/owner/dashboard" className="text-muted-foreground hover:text-primary transition-all-200">Package Owner</Link></li>
-              <li><Link to="/driver/dashboard" className="text-muted-foreground hover:text-primary transition-all-200">Delivery Driver</Link></li>
-              <li><Link to="/admin/dashboard" className="text-muted-foreground hover:text-primary transition-all-200">Admin Portal</Link></li>
+              {hasRole('owner') && (
+                <li><Link to="/owner/dashboard" className="text-muted-foreground hover:text-primary transition-all-200">Package Owner</Link></li>
+              )}
+              {hasRole('driver') && (
+                <li><Link to="/driver/dashboard" className="text-muted-foreground hover:text-primary transition-all-200">Delivery Driver</Link></li>
+              )}
+              {hasRole('admin') && (
+                <li><Link to="/admin/dashboard" className="text-muted-foreground hover:text-primary transition-all-200">Admin Portal</Link></li>
+              )}
               <li><Link to="#" className="text-muted-foreground hover:text-primary transition-all-200">API Access</Link></li>
             </ul>
           </div>

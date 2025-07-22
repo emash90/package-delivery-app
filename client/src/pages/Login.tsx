@@ -88,6 +88,14 @@ const Login = () => {
     if (user) navigateByRole(user.role);
   }, [user]);
 
+  // Reset form on mount to ensure clean state
+  useEffect(() => {
+    form.reset({
+      email: '',
+      password: '',
+    });
+  }, [form]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/30 p-4">
       <div className="w-full max-w-md">
@@ -98,7 +106,7 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
                 <FormField
                   control={form.control}
                   name="email"
@@ -110,8 +118,8 @@ const Login = () => {
                           <Mail aria-label="email icon" className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="email"
-                            placeholder="you@example.com"
-                            autoComplete="off"
+                            placeholder="example@email.com"
+                            autoComplete="new-password"
                             className="pl-10"
                             {...field}
                           />
@@ -133,7 +141,7 @@ const Login = () => {
                           <Input
                             type="password"
                             placeholder="••••••••"
-                            autoComplete="off"
+                            autoComplete="new-password"
                             className="pl-10"
                             {...field}
                           />

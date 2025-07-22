@@ -43,9 +43,10 @@ const NavBar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    user.role !== 'driver' && navigate('/');
+    if (user?.role !== 'driver') {
+      navigate('/');
+    }
     dispatch(logout());
-    
   };
 
   const handleButtonClick = () => {
@@ -53,6 +54,8 @@ const NavBar: React.FC = () => {
       navigate('/owner/dashboard');
     } else if (user?.role === 'driver') {
       navigate('/driver/dashboard');
+    } else if (user?.role === 'admin') {
+      navigate('/admin/dashboard');
     } else {
       navigate('/');
     }

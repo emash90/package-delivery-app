@@ -8,6 +8,8 @@ import { Routes, Route } from "react-router-dom";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { fetchCurrentUser } from "@/store/slices/authSlice";
 import { toast } from "sonner";
+import PermissionGuard from "@/components/PermissionGuard";
+import { UserPermissionProvider } from "@/contexts/UserPermissionContext";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -58,12 +60,61 @@ const AppContent = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/track" element={<TrackPackage />} />
-      <Route path="/owner/dashboard" element={<OwnerDashboard />} />
-      <Route path="/owner/package/:id" element={<PackageDetail />} />
-      <Route path="/owner/create-package" element={<CreatePackage />} />
-      <Route path="/driver/dashboard" element={<DriverDashboard />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/users" element={<UserManagement />} />
+      
+      {/* Package Owner Routes - Only accessible by owners */}
+      <Route 
+        path="/owner/dashboard" 
+        element={
+          <PermissionGuard requiredRole="owner" fallbackPath="/">
+            <OwnerDashboard />
+          </PermissionGuard>
+        } 
+      />
+      <Route 
+        path="/owner/package/:id" 
+        element={
+          <PermissionGuard requiredRole="owner" fallbackPath="/">
+            <PackageDetail />
+          </PermissionGuard>
+        } 
+      />
+      <Route 
+        path="/owner/create-package" 
+        element={
+          <PermissionGuard requiredRole="owner" fallbackPath="/">
+            <CreatePackage />
+          </PermissionGuard>
+        } 
+      />
+      
+      {/* Driver Routes - Only accessible by drivers */}
+      <Route 
+        path="/driver/dashboard" 
+        element={
+          <PermissionGuard requiredRole="driver" fallbackPath="/">
+            <DriverDashboard />
+          </PermissionGuard>
+        } 
+      />
+      
+      {/* Admin Routes - Only accessible by admins */}
+      <Route 
+        path="/admin/dashboard" 
+        element={
+          <PermissionGuard requiredRole="admin" fallbackPath="/">
+            <AdminDashboard />
+          </PermissionGuard>
+        } 
+      />
+      <Route 
+        path="/admin/users" 
+        element={
+          <PermissionGuard requiredRole="admin" fallbackPath="/">
+            <UserManagement />
+          </PermissionGuard>
+        } 
+      />
+      
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -71,11 +122,13 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AppContent />
-    </TooltipProvider>
+    <UserPermissionProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AppContent />
+      </TooltipProvider>
+    </UserPermissionProvider>
   </QueryClientProvider>
 );
 

@@ -1,17 +1,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { userApi } from '../../services/api';
-
-export type UserRole = 'owner' | 'driver' | 'admin';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  createdAt: string;
-  status: 'active' | 'inactive';
-}
+import { User, UserRole, Permission, DEFAULT_PERMISSIONS } from '../../types/permissions';
 
 interface AuthState {
   user: User | null;
@@ -100,8 +90,12 @@ const authSlice = createSlice({
           name: action.payload.name,
           email: action.payload.email,
           role: action.payload.role,
-          createdAt: action.payload.createdAt,
+          roleId: action.payload.roleId,
+          permissions: action.payload.permissions || DEFAULT_PERMISSIONS[action.payload.role],
           status: action.payload.status,
+          lastLogin: action.payload.lastLogin ? new Date(action.payload.lastLogin) : undefined,
+          createdAt: action.payload.createdAt ? new Date(action.payload.createdAt) : undefined,
+          updatedAt: action.payload.updatedAt ? new Date(action.payload.updatedAt) : undefined,
         }
         state.token = action.payload.token;
       })
@@ -120,8 +114,12 @@ const authSlice = createSlice({
           name: action.payload.name,
           email: action.payload.email,
           role: action.payload.role,
-          createdAt: action.payload.createdAt,
+          roleId: action.payload.roleId,
+          permissions: action.payload.permissions || DEFAULT_PERMISSIONS[action.payload.role],
           status: action.payload.status,
+          lastLogin: action.payload.lastLogin ? new Date(action.payload.lastLogin) : undefined,
+          createdAt: action.payload.createdAt ? new Date(action.payload.createdAt) : undefined,
+          updatedAt: action.payload.updatedAt ? new Date(action.payload.updatedAt) : undefined,
         };
         state.token = action.payload.token;
       })
@@ -148,4 +146,30 @@ const authSlice = createSlice({
 });
 
 export const { setSelectedRole, clearErrors } = authSlice.actions;
+
+// Selectors
+export const selectUser = (state: { auth: AuthState }) => state.auth.user;
+export const selectUserPermissions = (state: { auth: AuthState }) => state.auth.user?.permissions || [];
+export const selectUserRole = (state: { auth: AuthState }) => state.auth.user?.role;
+export const selectIsAuthenticated = (state: { auth: AuthState }) => !!state.auth.user && !!state.auth.token;
+export const selectAuthLoading = (state: { auth: AuthState }) => state.auth.isLoading;
+export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
+
+// Permission checking selector
+export const selectHasPermission = (state: { auth: AuthState }, permission: Permission) => {
+  const userPermissions = state.auth.user?.permissions || [];
+  return userPermissions.includes(permission);
+};
+
+// Multiple permissions checking selector
+export const selectHasAnyPermission = (state: { auth: AuthState }, permissions: Permission[]) => {
+  const userPermissions = state.auth.user?.permissions || [];
+  return permissions.some(permission => userPermissions.includes(permission));
+};
+
+// Role checking selector
+export const selectHasRole = (state: { auth: AuthState }, role: UserRole) => {
+  return state.auth.user?.role === role;
+};
+
 export default authSlice.reducer;

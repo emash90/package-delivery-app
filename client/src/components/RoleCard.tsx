@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import GlassCard from './GlassCard';
 import { ArrowRight } from 'lucide-react';
-import { useAppDispatch } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setSelectedRole } from '@/store/slices/authSlice';
 import type { UserRole } from '@/store/slices/authSlice';
 
@@ -25,16 +25,21 @@ const RoleCard: React.FC<RoleCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const user = useAppSelector(state => state.auth.user);
   
   const handleRoleSelect = () => {
-    if (role === 'admin') {
-      dispatch(setSelectedRole('admin'));
-      navigate('/register');
-    } else if (role === 'driver') {
-      dispatch(setSelectedRole('driver'));
-      navigate('/driver/dashboard');
-    } else if (role === 'owner') {
-      dispatch(setSelectedRole('owner'));
+    // If user is already authenticated and has the role, navigate to their dashboard
+    if (user && user.role === role) {
+      if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'driver') {
+        navigate('/driver/dashboard');
+      } else if (role === 'owner') {
+        navigate('/owner/dashboard');
+      }
+    } else {
+      // Otherwise, set the selected role and navigate to registration
+      dispatch(setSelectedRole(role as UserRole));
       navigate('/register');
     }
   };
