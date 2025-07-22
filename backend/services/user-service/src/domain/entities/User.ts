@@ -22,5 +22,7 @@ export interface UserResponse {
   permissions?: string[];
   status: 'active' | 'inactive' | 'suspended';
   lastLogin?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   token?: string;
 }

@@ -43,10 +43,8 @@ const NavBar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    if (user?.role !== 'driver') {
-      navigate('/');
-    }
     dispatch(logout());
+    navigate('/login');
   };
 
   const handleButtonClick = () => {

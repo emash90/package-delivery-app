@@ -49,9 +49,10 @@ const OwnerDashboard = () => {
   const [timeFilter, setTimeFilter] = useState('Last 30 Days');
 
   useEffect(() => {
-    // Fetch packages when component mounts
-    dispatch(fetchPackages(user?.id));
-
+    // Fetch packages when component mounts and user is loaded
+    if (user?.id) {
+      dispatch(fetchPackages(user.id));
+    }
   }, [dispatch, user?.id]);
 
   // Filter packages based on search and filter criteria
@@ -85,7 +86,9 @@ const OwnerDashboard = () => {
         await dispatch(updatePackage(updatedPackage));
         
         // Refresh the list
-        dispatch(fetchPackages(user.id));
+        if (user?.id) {
+          dispatch(fetchPackages(user.id));
+        }
         
         // Optional: Show success message
       } catch (error) {
@@ -118,7 +121,7 @@ const OwnerDashboard = () => {
           <main className="flex-grow pt-24 pb-20 flex items-center justify-center">
             <div className="text-center text-red-500">
               <p>Error loading packages: {error}</p>
-              <Button onClick={() => dispatch(fetchPackages(user.id))} className="mt-4">
+              <Button onClick={() => user?.id && dispatch(fetchPackages(user.id))} className="mt-4">
                 Retry
               </Button>
             </div>

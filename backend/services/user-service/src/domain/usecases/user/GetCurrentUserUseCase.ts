@@ -1,5 +1,5 @@
 
-import { User, UserResponse } from '../../entities/User';
+import { UserResponse } from '../../entities/User';
 import { IUserRepository } from '../../repositories/IUserRepository';
 
 export class GetCurrentUserUseCase {
@@ -19,6 +19,12 @@ export class GetCurrentUserUseCase {
       name: user.name,
       email: user.email,
       role: user.role,
-      status: user.status,    };
+      roleId: user.roleId,
+      permissions: user.permissions,
+      status: user.status,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
 }

@@ -26,7 +26,7 @@ export const requirePermission = (requiredPermission: Permission) => {
     // Check if user has the required permission
     if (!userPermissions.includes(requiredPermission)) {
       return res.status(403).json({ 
-        message: `Access denied. Required permission: ${requiredPermission}` 
+        message: `Access denied. Required permission: ${requiredPermission}. User has: ${userPermissions.join(', ')}` 
       });
     }
 

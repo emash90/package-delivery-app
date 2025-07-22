@@ -132,7 +132,18 @@ const authSlice = createSlice({
       })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = {
+          id: action.payload.id,
+          name: action.payload.name,
+          email: action.payload.email,
+          role: action.payload.role,
+          roleId: action.payload.roleId,
+          permissions: action.payload.permissions || DEFAULT_PERMISSIONS[action.payload.role],
+          status: action.payload.status,
+          lastLogin: action.payload.lastLogin ? new Date(action.payload.lastLogin) : undefined,
+          createdAt: action.payload.createdAt ? new Date(action.payload.createdAt) : undefined,
+          updatedAt: action.payload.updatedAt ? new Date(action.payload.updatedAt) : undefined,
+        };
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.isLoading = false;

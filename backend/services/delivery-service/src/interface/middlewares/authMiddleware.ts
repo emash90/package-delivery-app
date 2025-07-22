@@ -8,6 +8,7 @@ export interface AuthRequest extends Request {
     id: string;
     email: string;
     role: string;
+    permissions?: string[];
   };
 }
 
@@ -22,12 +23,13 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     const token = authHeader.split(' ')[1];
     const JWT_SECRET = process.env.JWT_SECRET || 'packaroo_delivery_service_secret';
     
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string; role: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string; role: string; permissions?: string[] };
     
     req.user = {
       id: decoded.id,
       email: decoded.email,
-      role: decoded.role
+      role: decoded.role,
+      permissions: decoded.permissions
     };
     
     next();
