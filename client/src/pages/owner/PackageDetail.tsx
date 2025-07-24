@@ -151,7 +151,11 @@ const PackageDetail = () => {
                         currentPackage.status === "in transit" ? "bg-yellow-100 text-yellow-800" :
                         "bg-gray-100 text-gray-800"
                       )}>
-                        {currentPackage.status}
+                        <span className="capitalize">
+                          {currentPackage.status === "in transit" ? "Out for Delivery" : 
+                           currentPackage.status === "delivered" ? "Delivered" :
+                           currentPackage.status === "processing" ? "Processing" : currentPackage.status}
+                        </span>
                       </span>
                       <Link 
                         to="/owner/dashboard" 
@@ -307,8 +311,11 @@ const PackageDetail = () => {
                       <div>
                         <p className="font-medium">Delivered</p>
                         <p className="text-sm text-muted-foreground">
-                          {currentPackage.status === "delivered" ? 
-                            `Delivered on ${formatDateTime(currentPackage.lastUpdate)}` : 
+                          {currentPackage.status === "delivered" ? (
+                            <span className="flex items-center gap-1">
+                              <span className="text-green-600 font-medium">✓ Delivered successfully on {formatDateTime(currentPackage.lastUpdate)}</span>
+                            </span>
+                          ) : 
                             `Estimated delivery: ${formatDate(currentPackage.eta)}`}
                         </p>
                       </div>
@@ -316,17 +323,49 @@ const PackageDetail = () => {
                   </div>
                 </GlassCard>
 
+                {/* Delivery Completion Info - Only show for delivered packages */}
+                {currentPackage.status === 'delivered' && (
+                  <GlassCard className="p-6 border-green-200 bg-green-50/50">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-full bg-green-100">
+                        <Truck className="h-5 w-5 text-green-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-green-800">Package Delivered Successfully!</h3>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-green-700">
+                        <strong>Delivery Completed:</strong> {formatDateTime(currentPackage.lastUpdate)}
+                      </p>
+                      <p className="text-sm text-green-700">
+                        <strong>Delivered To:</strong> {currentPackage.recipientName}
+                      </p>
+                      <p className="text-sm text-green-700">
+                        <strong>Location:</strong> {currentPackage.location}
+                      </p>
+                    </div>
+                  </GlassCard>
+                )}
+
                 {/* Actions */}
                 <GlassCard className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Actions</h3>
                   <div className="space-y-3">
-                    <Button className="w-full" variant="outline"
-                      onClick={() => navigate('/track')}
-                    >
-                      Track Package
-                    </Button>
-                    <Button className="w-full" variant="outline">Contact Carrier</Button>
-                    <Button className="w-full" variant="destructive">Report Issue</Button>
+                    {currentPackage.status !== 'delivered' ? (
+                      <>
+                        <Button className="w-full" variant="outline"
+                          onClick={() => navigate('/track')}
+                        >
+                          Track Package
+                        </Button>
+                        <Button className="w-full" variant="outline">Contact Carrier</Button>
+                        <Button className="w-full" variant="destructive">Report Issue</Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button className="w-full" variant="outline">View Delivery Receipt</Button>
+                        <Button className="w-full" variant="outline">Rate Delivery Experience</Button>
+                      </>
+                    )}
                     <Button 
                       variant="outline" 
                       className="w-full"

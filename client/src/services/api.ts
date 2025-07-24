@@ -140,6 +140,7 @@ export const permissionApi = {
 export const deliveryApi = {
   getPendingDeliveries: () => fetchData('/deliveries'),
   getDriverDeliveries: () => fetchData('/deliveries/driver'),
+  getDriverCompletedDeliveries: () => fetchData('/deliveries/driver/completed'),
   getOwnerDeliveries: () => fetchData('/deliveries/owner'),
   startDelivery: (deliveryId: string) => fetchData(`/deliveries/${deliveryId}/start`, {
     method: 'POST'
@@ -152,3 +153,6 @@ export const deliveryApi = {
     body: JSON.stringify({ issue })
   })
 };
+
+// Admin functionality uses existing APIs for now
+// Future admin-specific endpoints can be added here when backend supports them

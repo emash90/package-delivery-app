@@ -31,12 +31,21 @@ export class DeliveryService implements IDeliveryService {
   async getDriverDeliveries(driverId: string): Promise<Delivery[]> {
     return this.getDriverDeliveriesUseCase.execute(driverId);
   }
+
+  async getDriverCompletedDeliveries(driverId: string): Promise<Delivery[]> {
+    const allDriverDeliveries = await this.getDriverDeliveriesUseCase.execute(driverId);
+    return allDriverDeliveries.filter(delivery => delivery.status === 'delivered');
+  }
   
   async getOwnerDeliveries(ownerId: string): Promise<Delivery[]> {
     return this.getOwnerDeliveriesUseCase.execute(ownerId);
   }
 
-  async getPendingDeliveries(status: String): Promise<Delivery[]> {
+  async getDeliveryById(deliveryId: string): Promise<Delivery | null> {
+    return this.deliveryRepository.findById(deliveryId);
+  }
+
+  async getPendingDeliveries(): Promise<Delivery[]> {
     return this.getPendingDeliveriesUseCase.execute();
   }
   

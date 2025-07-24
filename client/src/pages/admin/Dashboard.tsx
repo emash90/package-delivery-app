@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import PageTransition from '@/components/PageTransition';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import GlassCard from '@/components/GlassCard';
 import AnimatedButton from '@/components/AnimatedButton';
+import { AppDispatch, RootState } from '@/store';
+import { fetchAdminStats, fetchAdminMetrics } from '@/store/slices/adminSlice';
 import { 
   Package,
   Truck,
@@ -74,6 +77,77 @@ const incidents = [
 ];
 
 const AdminDashboard = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { stats, metrics, recentIssues, isLoading, error } = useSelector((state: RootState) => state.admin);
+  const [quickFilter, setQuickFilter] = useState<string | null>(null);
+
+  useEffect(() => {
+    dispatch(fetchAdminStats());
+    dispatch(fetchAdminMetrics());
+  }, [dispatch]);
+
+  // Handle stat card clicks
+  const handleCardClick = (filterType: string) => {
+    setQuickFilter(quickFilter === filterType ? null : filterType);
+  };
+
+  if (isLoading) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen flex flex-col">
+          <NavBar />
+          <main className="flex-grow pt-24 pb-20 flex items-center justify-center">
+            <div className="text-center">
+              <p>Loading admin dashboard...</p>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen flex flex-col">
+          <NavBar />
+          <main className="flex-grow pt-24 pb-20 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-red-500 mb-4">
+                <AlertCircle className="h-12 w-12 mx-auto mb-2" />
+                <p className="text-lg font-semibold">Error loading admin data</p>
+                <p className="text-sm text-gray-600 mt-2">{error}</p>
+              </div>
+              <div className="space-y-2">
+                <AnimatedButton onClick={() => {
+                  dispatch(fetchAdminStats());
+                  dispatch(fetchAdminMetrics());
+                }} className="mr-2">
+                  Retry
+                </AnimatedButton>
+                <AnimatedButton 
+                  variant="outline"
+                  onClick={() => {
+                    // Clear error and show dashboard with default values
+                    window.location.reload();
+                  }}
+                >
+                  Refresh Page
+                </AnimatedButton>
+              </div>
+              <div className="mt-4 text-xs text-gray-500">
+                <p>This may be due to insufficient permissions or network issues.</p>
+                <p>Try logging in as an admin user or check your connection.</p>
+              </div>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </PageTransition>
+    );
+  }
+
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col">
@@ -91,28 +165,96 @@ const AdminDashboard = () => {
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
               {[
-                { title: "Active Packages", value: "248", change: "+12% ↑", icon: <Package className="h-6 w-6" />, color: "text-blue-500" },
-                { title: "Active Drivers", value: "42", change: "+3% ↑", icon: <Truck className="h-6 w-6" />, color: "text-green-500" },
-                { title: "Total Users", value: "1,893", change: "+8% ↑", icon: <Users className="h-6 w-6" />, color: "text-purple-500" },
-                { title: "Open Issues", value: "6", change: "-2% ↓", icon: <AlertCircle className="h-6 w-6" />, color: "text-orange-500" },
+                { 
+                  title: "Active Packages", 
+                  value: stats.activePackages.toString(), 
+                  change: stats.totalPackages > 0 ? `${Math.round((stats.activePackages / stats.totalPackages) * 100)}% Active` : "0% Active",
+                  icon: <Package className="h-6 w-6" />, 
+                  color: "text-blue-500",
+                  filterType: "active_packages",
+                  clickable: true
+                },
+                { 
+                  title: "Active Drivers", 
+                  value: stats.activeDrivers.toString(), 
+                  change: stats.totalDrivers > 0 ? `${stats.totalDrivers} Total` : "0 Total",
+                  icon: <Truck className="h-6 w-6" />, 
+                  color: "text-green-500",
+                  filterType: "active_drivers",
+                  clickable: true
+                },
+                { 
+                  title: "Total Users", 
+                  value: stats.totalUsers.toString(), 
+                  change: `${stats.packageOwners} Owners, ${stats.totalDrivers} Drivers`,
+                  icon: <Users className="h-6 w-6" />, 
+                  color: "text-purple-500",
+                  filterType: "total_users",
+                  clickable: true
+                },
+                { 
+                  title: "Open Issues", 
+                  value: stats.openIssues.toString(), 
+                  change: stats.openIssues > 0 ? "Needs Attention" : "All Clear",
+                  icon: <AlertCircle className="h-6 w-6" />, 
+                  color: "text-orange-500",
+                  filterType: "open_issues",
+                  clickable: true
+                },
               ].map((stat, index) => (
-                <GlassCard key={index} className="p-6">
+                <GlassCard 
+                  key={index} 
+                  className={cn(
+                    "p-6 transition-all duration-200",
+                    stat.clickable && "cursor-pointer hover:shadow-lg hover:scale-105",
+                    quickFilter === stat.filterType && "ring-2 ring-primary/50 bg-primary/5"
+                  )}
+                  onClick={() => stat.clickable && handleCardClick(stat.filterType)}
+                >
                   <div className="flex justify-between items-start mb-4">
                     <div className={cn("p-3 rounded-full", `${stat.color}/10`)}>
                       <div className={stat.color}>{stat.icon}</div>
                     </div>
                     <span className={cn(
-                      "text-xs font-medium px-2 py-1 rounded-full",
-                      stat.change.includes("↑") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                      "text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-700"
                     )}>
                       {stat.change}
                     </span>
                   </div>
                   <h3 className="text-2xl font-bold">{stat.value}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {stat.title}
+                    {stat.clickable && (
+                      <span className="ml-1 text-xs text-primary opacity-60">
+                        {quickFilter === stat.filterType ? "• Filtered" : "• Click to filter"}
+                      </span>
+                    )}
+                  </p>
                 </GlassCard>
               ))}
             </div>
+            
+            {/* Quick Filter Indicator */}
+            {quickFilter && (
+              <div className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-primary">
+                    Admin Filter Active: {
+                      quickFilter === 'active_packages' ? 'Active Packages' :
+                      quickFilter === 'active_drivers' ? 'Active Drivers' :
+                      quickFilter === 'total_users' ? 'All Users' :
+                      quickFilter === 'open_issues' ? 'Open Issues' : quickFilter
+                    }
+                  </span>
+                </div>
+                <button 
+                  onClick={() => setQuickFilter(null)}
+                  className="text-primary hover:text-primary/80 text-sm font-medium"
+                >
+                  Clear Filter
+                </button>
+              </div>
+            )}
             
             {/* Charts and Maps */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
@@ -170,8 +312,8 @@ const AdminDashboard = () => {
                       <TrendingUp className="h-4 w-4 text-green-500" />
                       <span className="text-sm font-medium">Average Time</span>
                     </div>
-                    <p className="text-2xl font-semibold mt-2">18.5 min</p>
-                    <p className="text-xs text-muted-foreground mt-1">-2.3% from last week</p>
+                    <p className="text-2xl font-semibold mt-2">{metrics.averageDeliveryTime} min</p>
+                    <p className="text-xs text-muted-foreground mt-1">Delivery time</p>
                   </div>
                   
                   <div className="p-4 bg-gray-50 rounded-lg">
@@ -179,8 +321,8 @@ const AdminDashboard = () => {
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span className="text-sm font-medium">Success Rate</span>
                     </div>
-                    <p className="text-2xl font-semibold mt-2">96.8%</p>
-                    <p className="text-xs text-muted-foreground mt-1">+1.2% from last week</p>
+                    <p className="text-2xl font-semibold mt-2">{metrics.deliverySuccessRate.toFixed(1)}%</p>
+                    <p className="text-xs text-muted-foreground mt-1">Delivery success rate</p>
                   </div>
                 </div>
               </GlassCard>
@@ -195,11 +337,11 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-xs">42 Drivers</span>
+                      <span className="text-xs">{stats.activeDrivers} Active Drivers</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                      <span className="text-xs">103 Active Deliveries</span>
+                      <span className="text-xs">{stats.pendingDeliveries} Active Deliveries</span>
                     </div>
                   </div>
                 </div>
@@ -236,7 +378,13 @@ const AdminDashboard = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  {incidents.map((incident) => (
+                  {recentIssues.length === 0 ? (
+                    <GlassCard className="p-8 text-center">
+                      <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500 opacity-50" />
+                      <p className="text-muted-foreground">No recent incidents</p>
+                      <p className="text-sm text-muted-foreground mt-1">All systems operating normally</p>
+                    </GlassCard>
+                  ) : recentIssues.map((incident) => (
                     <GlassCard key={incident.id} className="p-4 hover:shadow-md transition-all-300 hover:border-primary/20 border border-transparent">
                       <div className="flex flex-col md:flex-row md:items-center gap-4">
                         <div className="md:w-[60%]">
@@ -276,21 +424,23 @@ const AdminDashboard = () => {
                 <h2 className="text-xl font-semibold mb-6">Quick Actions</h2>
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { title: "Generate Reports", icon: <FileText className="h-5 w-5" /> },
-                    { title: "Manage Users", icon: <Users className="h-5 w-5" /> },
-                    { title: "System Settings", icon: <Settings className="h-5 w-5" /> },
-                    { title: "Schedule", icon: <Calendar className="h-5 w-5" /> },
-                    { title: "Inventory", icon: <Layers className="h-5 w-5" /> },
-                    { title: "Notifications", icon: <Bell className="h-5 w-5" /> },
+                    { title: "Generate Reports", icon: <FileText className="h-5 w-5" />, url: "/admin/reports" },
+                    { title: "Manage Users", icon: <Users className="h-5 w-5" />, url: "/admin/users" },
+                    { title: "System Settings", icon: <Settings className="h-5 w-5" />, url: "/admin/settings" },
+                    { title: "Schedule", icon: <Calendar className="h-5 w-5" />, url: "/admin/schedule" },
+                    { title: "Inventory", icon: <Layers className="h-5 w-5" />, url: "/admin/inventory" },
+                    { title: "Notifications", icon: <Bell className="h-5 w-5" />, url: "/admin/notifications" },
                   ].map((action, index) => (
-                    <GlassCard key={index} className="p-4 hover-scale cursor-pointer">
-                      <div className="flex flex-col items-center text-center gap-3">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <div className="text-primary">{action.icon}</div>
+                    <Link to={action.url} key={index}>
+                      <GlassCard className="p-4 hover-scale cursor-pointer">
+                        <div className="flex flex-col items-center text-center gap-3">
+                          <div className="p-2 rounded-full bg-primary/10">
+                            <div className="text-primary">{action.icon}</div>
+                          </div>
+                          <span className="text-sm font-medium">{action.title}</span>
                         </div>
-                        <span className="text-sm font-medium">{action.title}</span>
-                      </div>
-                    </GlassCard>
+                      </GlassCard>
+                    </Link>
                   ))}
                 </div>
                 
@@ -300,10 +450,10 @@ const AdminDashboard = () => {
                     <h3 className="font-medium mb-4">Today's Summary</h3>
                     <div className="space-y-3">
                       {[
-                        { label: "New Users", value: "12", icon: <User className="h-4 w-4 text-blue-500" /> },
-                        { label: "Packages Delivered", value: "87", icon: <CheckCircle className="h-4 w-4 text-green-500" /> },
-                        { label: "Revenue", value: "$8,254", icon: <TrendingUp className="h-4 w-4 text-green-500" /> },
-                        { label: "Customer Issues", value: "3", icon: <TrendingDown className="h-4 w-4 text-orange-500" /> },
+                        { label: "Total Users", value: stats.totalUsers.toString(), icon: <User className="h-4 w-4 text-blue-500" /> },
+                        { label: "Packages Delivered", value: stats.deliveredPackages.toString(), icon: <CheckCircle className="h-4 w-4 text-green-500" /> },
+                        { label: "Active Packages", value: stats.activePackages.toString(), icon: <Package className="h-4 w-4 text-blue-500" /> },
+                        { label: "Open Issues", value: stats.openIssues.toString(), icon: <AlertCircle className="h-4 w-4 text-orange-500" /> },
                       ].map((item, index) => (
                         <div key={index} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">

@@ -23,6 +23,22 @@ export class DeliveryController {
     }
   };
 
+  getDriverCompletedDeliveries = async (req: AuthRequest, res: Response) => {
+    try {
+      const driverId = req.user?.id;
+      
+      if (req.user?.role !== 'driver') {
+        return res.status(403).json({ message: 'Access denied: Driver role required' });
+      }
+      
+      const deliveries = await this.deliveryService.getDriverCompletedDeliveries(driverId as string);
+      res.status(200).json(deliveries);
+    } catch (error) {
+      logger.error('Error fetching driver completed deliveries:', error);
+      res.status(500).json({ message: 'Failed to fetch completed deliveries' });
+    }
+  };
+
   getOwnerDeliveries = async (req: AuthRequest, res: Response) => {
     try {
       const ownerId = req.user?.id;
@@ -69,16 +85,48 @@ export class DeliveryController {
       if (req.user?.role !== 'driver') {
         return res.status(403).json({ message: 'Access denied: Driver role required' });
       }
-      
-      const delivery = await this.deliveryService.completeDelivery(deliveryId, driverId as string);
-      
-      if (!delivery) {
+
+      if (!driverId) {
+        return res.status(400).json({ message: 'Driver ID is required' });
+      }
+
+      // First check if delivery exists and if driver is assigned to it
+      const existingDelivery = await this.deliveryService.getDeliveryById(deliveryId);
+      if (!existingDelivery) {
         return res.status(404).json({ message: 'Delivery not found' });
       }
+
+      // Check if the driver is authorized to complete this delivery
+      if (existingDelivery.driverId && existingDelivery.driverId !== driverId) {
+        return res.status(403).json({ message: 'You are not authorized to complete this delivery' });
+      }
       
-      res.status(200).json(delivery);
+      const delivery = await this.deliveryService.completeDelivery(deliveryId, driverId);
+      
+      if (!delivery) {
+        return res.status(404).json({ message: 'Delivery not found or could not be completed' });
+      }
+      
+      res.status(200).json({
+        ...delivery,
+        message: 'Delivery completed successfully'
+      });
     } catch (error) {
       logger.error('Error completing delivery:', error);
+      
+      // Send specific error messages for validation errors
+      if (error instanceof Error && error.message.includes('must be in transit')) {
+        return res.status(400).json({ 
+          message: 'Delivery must be in transit before it can be completed' 
+        });
+      }
+      
+      if (error instanceof Error && error.message.includes('Driver ID is required')) {
+        return res.status(400).json({ 
+          message: 'Driver ID is required to complete delivery' 
+        });
+      }
+      
       res.status(500).json({ message: 'Failed to complete delivery' });
     }
   };
@@ -107,7 +155,7 @@ export class DeliveryController {
 
   getPendingDeliveries = async (req: AuthRequest, res: Response) => {
     try {
-      const deliveries = await this.deliveryService.getPendingDeliveries('pending');
+      const deliveries = await this.deliveryService.getPendingDeliveries();
       res.status(200).json(deliveries);
     } catch (error) {
       logger.error('Error fetching pending deliveries:', error);

@@ -3,12 +3,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import packageReducer from './slices/packageSlice';
 import deliveryReducer from './slices/deliverySlice';
+import adminReducer from './slices/adminSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     packages: packageReducer,
     deliveries: deliveryReducer,
+    admin: adminReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

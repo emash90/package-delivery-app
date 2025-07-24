@@ -47,6 +47,7 @@ const OwnerDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const [timeFilter, setTimeFilter] = useState('Last 30 Days');
+  const [quickFilter, setQuickFilter] = useState<string | null>(null);
 
   useEffect(() => {
     // Fetch packages when component mounts and user is loaded
@@ -55,8 +56,34 @@ const OwnerDashboard = () => {
     }
   }, [dispatch, user?.id]);
 
+  // Handle stat card clicks
+  const handleCardClick = (filterType: string) => {
+    console.log('Owner card clicked:', filterType); // Debug log
+    setQuickFilter(quickFilter === filterType ? null : filterType);
+    // Reset other filters when using quick filter
+    if (quickFilter !== filterType) {
+      setSearchTerm('');
+      setStatusFilter('All Statuses');
+    }
+  };
+
   // Filter packages based on search and filter criteria
   const filteredPackages = packages.filter(pkg => {
+    // Apply quick filter first - if active, only apply quick filter
+    if (quickFilter) {
+      if (quickFilter === 'active') {
+        return pkg.status !== 'delivered';
+      }
+      if (quickFilter === 'delivered') {
+        return pkg.status === 'delivered';
+      }
+      if (quickFilter === 'in_transit') {
+        return pkg.status === 'in transit';
+      }
+      return false; // Unknown quick filter
+    }
+    
+    // Apply regular filters when no quick filter is active
     const matchesSearch = pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          pkg.status.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All Statuses' || pkg.status === statusFilter;
@@ -151,41 +178,92 @@ const OwnerDashboard = () => {
               {[
                 { 
                   title: "Active Packages", 
-                  value: packages.filter(p => p.status !== 'Delivered').length, 
+                  value: packages.filter(p => p.status !== 'delivered').length, 
                   icon: <Package className="h-6 w-6" />, 
-                  color: "text-blue-500" 
+                  color: "text-blue-500",
+                  filterType: "active",
+                  clickable: true
                 },
                 { 
-                  title: "Delivered (30 days)", 
-                  value: packages.filter(p => p.status === 'Delivered').length, 
+                  title: "Delivered", 
+                  value: packages.filter(p => p.status === 'delivered').length, 
                   icon: <CheckCircle2 className="h-6 w-6" />, 
-                  color: "text-green-500" 
+                  color: "text-green-500",
+                  filterType: "delivered",
+                  clickable: true
                 },
                 { 
                   title: "Out for Delivery", 
-                  value: packages.filter(p => p.status === 'Out for delivery').length, 
+                  value: packages.filter(p => p.status === 'in transit').length, 
                   icon: <Truck className="h-6 w-6" />, 
-                  color: "text-orange-500" 
+                  color: "text-orange-500",
+                  filterType: "in_transit",
+                  clickable: true
                 },
                 { 
                   title: "Notifications", 
                   value: "3", // This would come from your notifications state
                   icon: <Bell className="h-6 w-6" />, 
-                  color: "text-purple-500" 
+                  color: "text-purple-500",
+                  clickable: false
                 },
               ].map((stat, index) => (
-                <GlassCard key={index} className="p-6 flex items-center">
+                <GlassCard 
+                  key={index} 
+                  className={cn(
+                    "p-6 flex items-center transition-all duration-200",
+                    stat.clickable && "cursor-pointer hover:shadow-lg hover:scale-105",
+                    quickFilter === stat.filterType && "ring-2 ring-primary/50 bg-primary/5",
+                    !stat.clickable && "opacity-75"
+                  )}
+                  onClick={() => stat.clickable && stat.filterType && handleCardClick(stat.filterType)}
+                >
                   <div className={cn("p-3 rounded-full bg-white shadow-soft mr-4", `${stat.color}/10`)}>
                     <div className={stat.color}>{stat.icon}</div>
                   </div>
                   <div>
-                    <p className="text-muted-foreground text-sm">{stat.title}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {stat.title}
+                      {stat.clickable && (
+                        <span className="ml-1 text-xs text-primary opacity-60">
+                          {quickFilter === stat.filterType ? "• Filtered" : "• Click to filter"}
+                        </span>
+                      )}
+                    </p>
                     <p className="text-2xl font-semibold">{stat.value}</p>
                   </div>
                 </GlassCard>
               ))}
             </div>
             
+            {/* Quick Filter Indicator */}
+            {quickFilter && (
+              <div className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-primary">
+                    Filtering: {
+                      quickFilter === 'active' ? 'Active Packages' :
+                      quickFilter === 'delivered' ? 'Delivered Packages' :
+                      quickFilter === 'in_transit' ? 'Out for Delivery' : quickFilter
+                    }
+                  </span>
+                  <span className="text-xs text-primary/70">
+                    ({filteredPackages.length} packages)
+                  </span>
+                </div>
+                <button 
+                  onClick={() => {
+                    setQuickFilter(null);
+                    setSearchTerm('');
+                    setStatusFilter('All Statuses');
+                  }}
+                  className="text-primary hover:text-primary/80 text-sm font-medium"
+                >
+                  Clear Filter
+                </button>
+              </div>
+            )}
+
             {/* Search and Filter */}
             <div className="mb-8">
               <div className="flex flex-col md:flex-row gap-4">
@@ -206,9 +284,9 @@ const OwnerDashboard = () => {
                     onChange={(e) => setStatusFilter(e.target.value)}
                   >
                     <option>All Statuses</option>
-                    <option>In Transit</option>
-                    <option>delivered</option>
                     <option>processing</option>
+                    <option>in transit</option>
+                    <option>delivered</option>
                   </select>
                   <select 
                     className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
@@ -246,6 +324,7 @@ const OwnerDashboard = () => {
                       setSearchTerm('');
                       setStatusFilter('All Statuses');
                       setTimeFilter('Last 30 Days');
+                      setQuickFilter(null);
                     }}
                   >
                     Clear filters
@@ -293,11 +372,15 @@ const OwnerDashboard = () => {
                                 <p className="text-sm text-muted-foreground flex items-center gap-1">
                                   <div className={cn(
                                     "w-2 h-2 rounded-full",
-                                    pkg.status === "Delivered" ? "bg-green-500" :
-                                    pkg.status === "Out for delivery" ? "bg-orange-500" :
-                                    pkg.status === "In transit" ? "bg-blue-500" : "bg-gray-500"
+                                    pkg.status === "delivered" ? "bg-green-500" :
+                                    pkg.status === "in transit" ? "bg-blue-500" :
+                                    pkg.status === "processing" ? "bg-yellow-500" : "bg-gray-500"
                                   )} />
-                                  {pkg.status}
+                                  <span className="capitalize">
+                                    {pkg.status === "in transit" ? "Out for Delivery" : 
+                                     pkg.status === "delivered" ? "Delivered" :
+                                     pkg.status === "processing" ? "Processing" : pkg.status}
+                                  </span>
                                 </p>
                                 <p className="text-sm flex items-center gap-1 mt-1">
                                   <MapPin className="h-3 w-3 text-muted-foreground" />
@@ -328,41 +411,41 @@ const OwnerDashboard = () => {
                             <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                               <div 
                                 className={cn(
-                                  "h-full rounded-full",
-                                  pkg.status === "Delivered" ? "bg-green-500" :
-                                  pkg.status === "Out for delivery" ? "bg-orange-500" :
-                                  pkg.status === "In transit" ? "bg-blue-500" : "bg-gray-500",
-                                  "bg-primary"
+                                  "h-full rounded-full transition-all duration-500",
+                                  pkg.status === "delivered" ? "bg-green-500" :
+                                  pkg.status === "in transit" ? "bg-blue-500" :
+                                  pkg.status === "processing" ? "bg-yellow-500" : "bg-gray-400"
                                 )}
-                                style={{ width: `${pkg.status === "Delivered" ? '100%' : pkg.status }` }}
+                                style={{ 
+                                  width: pkg.status === "delivered" ? '100%' :
+                                         pkg.status === "in transit" ? '75%' :
+                                         pkg.status === "processing" ? '25%' : '10%'
+                                }}
                               ></div>
                             </div>
                           </div>
                         </GlassCard>
                       </Link>
                       <div className="flex justify-end mt-2 space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            // Example of updating package status
-                            const updatedPackage = {
-                              ...pkg,
-                              status: "Delivered",
-                              progress: 100
-                            };
-                            dispatch(updatePackage(updatedPackage));
-                          }}
-                        >
-                          Mark as Delivered
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          onClick={() => handleDeletePackage(pkg.id)}
-                        >
-                          Delete
-                        </Button>
+                        {pkg.status === 'delivered' ? (
+                          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                            <CheckCircle2 className="h-4 w-4" />
+                            <span className="text-sm font-medium">Successfully Delivered</span>
+                          </div>
+                        ) : pkg.status === 'in transit' ? (
+                          <div className="flex items-center gap-2 text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                            <Truck className="h-4 w-4" />
+                            <span className="text-sm font-medium">Out for Delivery</span>
+                          </div>
+                        ) : (
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => handleDeletePackage(pkg.id)}
+                          >
+                            Delete
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}

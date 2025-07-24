@@ -17,6 +17,7 @@ const deliveryController = new DeliveryController(deliveryService);
 // Driver routes
 router.get('/', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), deliveryController.getPendingDeliveries)
 router.get('/driver', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), deliveryController.getDriverDeliveries);
+router.get('/driver/completed', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), deliveryController.getDriverCompletedDeliveries);
 router.post('/:id/start', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_CLAIM), deliveryController.startDelivery);
 router.post('/:id/complete', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_COMPLETE), deliveryController.completeDelivery);
 router.post('/:id/issue', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_UPDATE), deliveryController.reportIssue);
