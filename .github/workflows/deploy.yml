@@ -1,0 +1,83 @@
+name: Deploy Full Stack
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  FRONTEND_BUCKET: packaroo-frontend-prod
+  CLOUDFRONT_DISTRIBUTION_ID: E2ZOHJNEYGM6FM
+  API_ENV: prod
+  VITE_API_URL: http://packar-Publi-st3xXfVxQKP9-1894782735.us-east-1.elb.amazonaws.com
+
+jobs:
+  backend:
+    name: Deploy Backend (ECS Copilot)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Copilot CLI
+        run: |
+          curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
+          chmod +x copilot
+          sudo mv copilot /usr/local/bin/copilot
+          copilot --version
+
+      - name: Deploy all backend services
+        run: |
+          copilot svc deploy --name api-gateway --env $API_ENV
+          copilot svc deploy --name user-service --env $API_ENV
+          copilot svc deploy --name package-service --env $API_ENV
+          copilot svc deploy --name delivery-service --env $API_ENV
+
+  frontend:
+    name: Deploy Frontend (S3 + CloudFront)
+    runs-on: ubuntu-latest
+    needs: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set API URL for production
+        run: |
+          echo "VITE_API_URL=${{ env.VITE_API_URL }}" > client/.env.production
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        working-directory: client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Sync to S3
+        run: aws s3 sync client/dist/ s3://$FRONTEND_BUCKET/ --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
+            --paths "/*"
