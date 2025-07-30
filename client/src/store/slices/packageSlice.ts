@@ -3,11 +3,6 @@ import { packageApi } from '../../services/api';
 import { logout } from './authSlice'
 
 
-export interface PackageImage {
-  id: string;
-  url: string;
-  isMain: boolean;
-}
 
 export interface Package {
   id?: string;
@@ -19,7 +14,7 @@ export interface Package {
   createdAt: string;
   recipientContact: string;
   lastUpdate: string;
-  images: PackageImage[];
+  images: string[];
   category: string;
   weight: number;
   description?: string;

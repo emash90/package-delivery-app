@@ -5,6 +5,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Helper function for making API requests
 const fetchData = async (endpoint: string, options = {}) => {
+  console.log('API_URL:', API_URL);
+  console.log('endpoint:', endpoint);
+  console.log('options:', options);
   try {
     // Add the auth token to requests if it exists
     const token = localStorage.getItem('token');
@@ -30,7 +33,7 @@ const fetchData = async (endpoint: string, options = {}) => {
       if (response.status === 401) {
         // Unauthorized - token might be expired
         localStorage.removeItem('token');
-        window.location.href = '/login';
+        // window.location.href = '/login';
         throw new Error('Authentication required. Please log in again.');
       }
       

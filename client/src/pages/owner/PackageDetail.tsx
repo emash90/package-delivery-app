@@ -118,13 +118,18 @@ const PackageDetail = () => {
                   ) : (
                     <Carousel className="w-full max-w-full">
                       <CarouselContent>
-                        {currentPackage.images.map((image, index) => (
+                        {currentPackage.images.map((imageUrl, index) => (
                           <CarouselItem key={index}>
                             <div className="aspect-video bg-muted rounded-md overflow-hidden">
                               <img 
-                                src={image.url} 
-                                alt={currentPackage.name} 
+                                src={imageUrl} 
+                                alt={`${currentPackage.name} - Image ${index + 1}`} 
                                 className="w-full h-full object-cover" 
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder.svg';
+                                  e.currentTarget.alt = 'Failed to load image';
+                                }}
+                                loading="lazy"
                               />
                             </div>
                           </CarouselItem>

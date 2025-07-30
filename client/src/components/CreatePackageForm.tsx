@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createPackage } from '@/store/slices/packageSlice';
 import { RootState, AppDispatch } from '@/store';
 import { useNavigate } from 'react-router-dom';
+import { s3Service } from '@/services/s3Service';
 
 import {
   Form,
@@ -103,6 +104,7 @@ const CreatePackageForm = () => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       
+      // Check total number of images
       if (packageImages.length + newFiles.length > 3) {
         toast({
           title: "Too many images",
@@ -111,10 +113,39 @@ const CreatePackageForm = () => {
         });
         return;
       }
-      
-      const newUrls = newFiles.map(file => URL.createObjectURL(file));
-      setPackageImages(prev => [...prev, ...newFiles]);
-      setImageUrls(prev => [...prev, ...newUrls]);
+
+      // Validate each file
+      const validFiles: File[] = [];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+
+      for (const file of newFiles) {
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            title: "Invalid file type",
+            description: `${file.name} is not a valid image format. Only JPEG, PNG, GIF, and WebP are allowed.`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        if (file.size > maxSize) {
+          toast({
+            title: "File too large",
+            description: `${file.name} exceeds the 10MB size limit.`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        validFiles.push(file);
+      }
+
+      if (validFiles.length > 0) {
+        const newUrls = validFiles.map(file => URL.createObjectURL(file));
+        setPackageImages(prev => [...prev, ...validFiles]);
+        setImageUrls(prev => [...prev, ...newUrls]);
+      }
     }
   };
 
@@ -138,32 +169,27 @@ const CreatePackageForm = () => {
     }
   
     try {
-      // 1. Upload images to Cloudinary first
-      const cloudinaryUrls = await Promise.all(
-        packageImages.map(async (image) => {
-          const cloudinaryFormData = new FormData();
-          cloudinaryFormData.append('file', image);
-          cloudinaryFormData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // Replace with your upload preset
-          cloudinaryFormData.append('cloud_name', 'YOUR_CLOUD_NAME'); // Replace with your cloud name
+      // Check if S3 is configured
+      if (!s3Service.isConfigured()) {
+        toast({
+          title: "Configuration Error",
+          description: "AWS S3 is not properly configured. Please check your environment variables.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // 1. Upload images to AWS S3 first (if any images are selected)
+      let s3ImageUrls: string[] = [];
+      if (packageImages.length > 0) {
+        toast({
+          title: "Uploading images...",
+          description: `Uploading ${packageImages.length} image(s) to S3`,
+        });
+        s3ImageUrls = await s3Service.uploadMultipleImages(packageImages, 'packages');
+      }
   
-          const response = await fetch(
-            `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`, // Replace with your cloud name
-            {
-              method: 'POST',
-              body: cloudinaryFormData,
-            }
-          );
-  
-          if (!response.ok) {
-            throw new Error('Failed to upload image to Cloudinary');
-          }
-  
-          const result = await response.json();
-          return result.secure_url; 
-        })
-      );
-  
-      // 2. Prepare package data with Cloudinary URLs
+      // 2. Prepare package data with S3 URLs
       const packageData = {
         name: data.name,
         description: data.description,
@@ -178,7 +204,8 @@ const CreatePackageForm = () => {
         trackingId: trackingId,
         eta: data.eta || "",
         lastUpdate: new Date().toISOString(),
-        images: cloudinaryUrls,
+        createdAt: new Date().toISOString(),
+        images: s3ImageUrls,
       };
   
       await dispatch(createPackage(packageData));
@@ -212,7 +239,7 @@ const CreatePackageForm = () => {
       console.error("Error creating package:", err);
       toast({
         title: "Error",
-        description: err.message || "Failed to create package",
+        description: err instanceof Error ? err.message : "Failed to create package. Please try again.",
         variant: "destructive",
       });
     }
@@ -506,7 +533,7 @@ const CreatePackageForm = () => {
                   <input
                     id="packageImages"
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                     multiple
                     onChange={handleImageUpload}
                     className="hidden"
