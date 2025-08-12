@@ -6,11 +6,11 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-1
-  FRONTEND_BUCKET: packaroo-frontend-prod
-  CLOUDFRONT_DISTRIBUTION_ID: E2ZOHJNEYGM6FM
-  API_ENV: prod
-  VITE_API_URL: http://packar-Publi-st3xXfVxQKP9-1894782735.us-east-1.elb.amazonaws.com
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  FRONTEND_BUCKET: ${{ secrets.FRONTEND_BUCKET }}
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+  API_ENV: ${{ secrets.API_ENV }}
+  VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
 jobs:
   backend:
@@ -36,6 +36,13 @@ jobs:
           copilot --version
 
       - name: Deploy all backend services
+        env:
+          RABBITMQ_URI: ${{ secrets.RABBITMQ_URI }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          PACKAGE_SERVICE_URL: ${{ secrets.PACKAGE_SERVICE_URL }}
+          USER_SERVICE_URL: ${{ secrets.USER_SERVICE_URL }}
+          DELIVERY_SERVICE_URL: ${{ secrets.DELIVERY_SERVICE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           copilot svc deploy --name api-gateway --env $API_ENV
           copilot svc deploy --name user-service --env $API_ENV

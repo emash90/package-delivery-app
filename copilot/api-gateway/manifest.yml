@@ -34,8 +34,11 @@ network:
 
 # Optional fields for more advanced use-cases.
 #
-#variables:                    # Pass environment variables as key value pairs.
-#  LOG_LEVEL: info
+variables:                    # Pass environment variables as key value pairs.
+  JWT_SECRET: ${JWT_SECRET}
+  USER_SERVICE_URL: ${USER_SERVICE_URL}
+  PACKAGE_SERVICE_URL: ${PACKAGE_SERVICE_URL}
+  DELIVERY_SERVICE_URL: ${DELIVERY_SERVICE_URL}
 
 #secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 #  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
