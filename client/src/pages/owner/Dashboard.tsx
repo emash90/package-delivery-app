@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import GlassCard from '@/components/GlassCard';
 import AnimatedButton from '@/components/AnimatedButton';
 import { 
-  Package, 
+  Package as PackageIcon, 
   MapPin, 
   Clock, 
   Bell, 
@@ -25,18 +25,8 @@ import {
   fetchPackages, 
   createPackage,
   updatePackage,
+  Package
 } from '@/store/slices/packageSlice'
-
-interface Package {
-  id: string;
-  name: string;
-  image: string;
-  status: string;
-  location: string;
-  eta: string;
-  lastUpdate: string;
-  progress: number;
-}
 
 const OwnerDashboard = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -179,7 +169,7 @@ const OwnerDashboard = () => {
                 { 
                   title: "Active Packages", 
                   value: packages.filter(p => p.status !== 'delivered').length, 
-                  icon: <Package className="h-6 w-6" />, 
+                  icon: <PackageIcon className="h-6 w-6" />, 
                   color: "text-blue-500",
                   filterType: "active",
                   clickable: true
@@ -341,23 +331,19 @@ const OwnerDashboard = () => {
                             <div className="md:w-[15%] mb-4 md:mb-0 md:mr-4">
                             <div className="aspect-square bg-muted rounded-md overflow-hidden">
                               {pkg.images && pkg.images.length > 0 ? (
-                                // Only show the main image or first image if no main is specified
-                                pkg.images.find(img => img.isMain)?.url || pkg.images[0]?.url ? (
-                                  <img 
-                                    src={pkg.images.find(img => img.isMain)?.url || pkg.images[0]?.url} 
-                                    alt={pkg.name} 
-                                    className="w-full h-full object-cover" 
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                    <FileImage className="h-8 w-8 text-gray-400" />
-                                  </div>
-                                )
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                  <FileImage className="h-8 w-8 text-gray-400" />
-                                </div>
-                              )}
+                                <img 
+                                  src={pkg.images[0]} 
+                                  alt={pkg.name} 
+                                  className="w-full h-full object-cover" 
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                  }}
+                                />
+                              ) : null}
+                              <div className={`w-full h-full flex items-center justify-center bg-gray-100 ${pkg.images && pkg.images.length > 0 ? 'hidden' : ''}`}>
+                                <FileImage className="h-8 w-8 text-gray-400" />
+                              </div>
                             </div>
                             </div>
                             
@@ -461,7 +447,7 @@ const OwnerDashboard = () => {
                   { title: "Track a New Package", icon: <Search className="h-5 w-5" />, url: "/track" },
                   { title: "View Delivery History", icon: <Clock className="h-5 w-5" />, url: "/" },
                   { title: "Manage Notifications", icon: <Bell className="h-5 w-5" />, url: "/" },
-                  { title: "Create New Package", icon: <Package className="h-5 w-5" />, url: "/owner/create-package" }
+                  { title: "Create New Package", icon: <PackageIcon className="h-5 w-5" />, url: "/owner/create-package" }
                 ].map((action, index) => (
                   <Link to={action.url} key={index}>
                     <GlassCard className="p-5 hover-scale cursor-pointer">

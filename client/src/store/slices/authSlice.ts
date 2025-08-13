@@ -15,7 +15,7 @@ const initialState: AuthState = {
   user: null,
   token: localStorage.getItem('token'),
   selectedRole: null,
-  isLoading: false,
+  isLoading: !!localStorage.getItem('token'), // Set loading to true if token exists
   error: null,
 };
 
@@ -147,6 +147,10 @@ const authSlice = createSlice({
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.isLoading = false;
+        // Clear invalid token on fetch failure
+        state.token = null;
+        state.user = null;
+        localStorage.removeItem('token');
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;

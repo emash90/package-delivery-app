@@ -5,6 +5,7 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import GlassCard from '@/components/GlassCard';
 import AnimatedButton from '@/components/AnimatedButton';
+import PackageDetailsModal from '@/components/PackageDetailsModal';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Package, 
@@ -28,6 +29,7 @@ const DriverDashboard = () => {
   const [quickFilter, setQuickFilter] = useState<string | null>(null);
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState<any>(null); // Store the delivery to start/complete
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -67,6 +69,11 @@ const DriverDashboard = () => {
     }
     setSelectedDelivery(delivery);
     setIsCompleteModalOpen(true); // Open the complete confirmation modal
+  };
+
+  const handleDetailsClick = (delivery: any) => {
+    setSelectedDelivery(delivery);
+    setIsDetailsModalOpen(true); // Open the details modal
   };
 
   const handleConfirmStartDelivery = () => {
@@ -500,7 +507,11 @@ const DriverDashboard = () => {
                               >
                                 Start Delivery
                               </AnimatedButton>
-                              <AnimatedButton size="sm" variant="outline">
+                              <AnimatedButton 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDetailsClick(delivery)}
+                              >
                                 Details
                               </AnimatedButton>
                             </div>
@@ -679,6 +690,14 @@ const DriverDashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Package Details Modal */}
+        <PackageDetailsModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          delivery={selectedDelivery}
+          onStartDelivery={handleStartDeliveryClick}
+        />
         
         <Footer />
       </div>
