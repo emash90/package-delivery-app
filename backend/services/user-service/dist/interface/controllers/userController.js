@@ -20,7 +20,7 @@ const tokenService = new TokenService_1.TokenService();
 const messagePublisher = new messageBroker_1.MessagePublisher();
 // Initialize use cases
 const loginUseCase = new LoginUseCase_1.LoginUseCase(userRepository, roleRepository, permissionRepository, passwordService, tokenService);
-const registerUseCase = new RegisterUseCase_1.RegisterUseCase(userRepository, passwordService, tokenService, messagePublisher);
+const registerUseCase = new RegisterUseCase_1.RegisterUseCase(userRepository, roleRepository, permissionRepository, passwordService, tokenService, messagePublisher);
 const getCurrentUserUseCase = new GetCurrentUserUseCase_1.GetCurrentUserUseCase(userRepository);
 exports.userController = {
     login: async (req, res) => {

@@ -21,7 +21,7 @@ const messagePublisher = new MessagePublisher();
 
 // Initialize use cases
 const loginUseCase = new LoginUseCase(userRepository, roleRepository, permissionRepository, passwordService, tokenService);
-const registerUseCase = new RegisterUseCase(userRepository, passwordService, tokenService, messagePublisher);
+const registerUseCase = new RegisterUseCase(userRepository, roleRepository, permissionRepository, passwordService, tokenService, messagePublisher);
 const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository);
 
 export const userController = {
