@@ -25,4 +25,7 @@ router.post('/:id/issue', authMiddleware, requirePermission(PERMISSIONS.DELIVERI
 // Owner routes
 router.get('/owner', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), checkDeliveryOwnership, deliveryController.getOwnerDeliveries);
 
+// Package-specific routes (for carrier info)
+router.get('/package/:packageId', authMiddleware, requirePermission(PERMISSIONS.DELIVERIES_READ), deliveryController.getDeliveryByPackage);
+
 export { router as deliveryRoutes };

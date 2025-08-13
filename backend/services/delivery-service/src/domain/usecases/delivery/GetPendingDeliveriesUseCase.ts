@@ -5,6 +5,6 @@ export class GetPendingDeliveriesUseCase {
   constructor(private deliveryRepository: IDeliveryRepository) {}
 
   async execute(): Promise<Delivery[]> {
-    return this.deliveryRepository.findPending('pending');
+    return this.deliveryRepository.findPending();
   }
 }

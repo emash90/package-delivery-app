@@ -125,5 +125,145 @@ export const userController = {
       logger.error('Get all users error:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
+  },
+
+  getDriverInfoForPackage: async (req: Request, res: Response) => {
+    try {
+      const { packageId } = req.params;
+      
+      logger.info(`Fetching driver info for package ID: ${packageId}`);
+      
+      // Validate packageId parameter
+      if (!packageId || packageId.trim() === '') {
+        logger.warn('Empty or invalid package ID provided');
+        return res.status(400).json({ message: 'Package ID is required' });
+      }
+      
+      try {
+        // Call delivery service to find the delivery record for this package
+        const deliveryServiceUrl = process.env.DELIVERY_SERVICE_URL || 'http://localhost:3003';
+        const deliveryResponse = await fetch(`${deliveryServiceUrl}/api/deliveries/package/${packageId}`, {
+          headers: {
+            'Authorization': req.headers.authorization || '',
+          }
+        });
+        
+        if (!deliveryResponse.ok) {
+          if (deliveryResponse.status === 404) {
+            logger.info(`No delivery record found for package ${packageId}`);
+            return res.status(404).json({ 
+              message: 'No delivery assigned to this package yet',
+              packageId: packageId
+            });
+          }
+          throw new Error(`Delivery service responded with status ${deliveryResponse.status}`);
+        }
+        
+        const delivery = await deliveryResponse.json();
+        
+        if (!delivery.driverId) {
+          logger.info(`Package ${packageId} does not have an assigned driver yet`);
+          return res.status(404).json({ 
+            message: 'No driver assigned to this package yet',
+            packageId: packageId
+          });
+        }
+        
+        // Now get the driver information
+        const driver = await userRepository.findById(delivery.driverId);
+        
+        if (!driver) {
+          logger.warn(`Driver not found with ID: ${delivery.driverId}`);
+          return res.status(404).json({ message: 'Driver not found' });
+        }
+        
+        // Verify the user is actually a driver
+        if (driver.role !== 'driver') {
+          logger.warn(`User ${delivery.driverId} is not a driver, role: ${driver.role}`);
+          return res.status(400).json({ message: 'Assigned user is not a driver' });
+        }
+        
+        logger.info(`Successfully found driver: ${driver.name} for package ${packageId}`);
+        
+        // Return basic driver information (privacy-conscious)
+        res.status(200).json({
+          id: driver.id,
+          name: driver.name,
+          email: driver.email,
+          role: driver.role,
+          status: driver.status,
+          createdAt: driver.createdAt,
+          packageId: packageId
+        });
+        
+      } catch (serviceError) {
+        logger.error('Error communicating with delivery service:', serviceError);
+        return res.status(503).json({ 
+          message: 'Unable to retrieve delivery information at this time',
+          packageId: packageId
+        });
+      }
+      
+    } catch (error) {
+      logger.error('Get driver info for package error:', error);
+      logger.error('Error stack:', error instanceof Error ? error.stack : 'Unknown error');
+      res.status(500).json({ 
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : 'Unknown error' : undefined
+      });
+    }
+  },
+
+  getDriverInfo: async (req: Request, res: Response) => {
+    try {
+      const { driverId } = req.params;
+      
+      logger.info(`Fetching driver info for ID: ${driverId}`);
+      
+      // Validate driverId parameter
+      if (!driverId || driverId.trim() === '') {
+        logger.warn('Empty or invalid driver ID provided');
+        return res.status(400).json({ message: 'Driver ID is required' });
+      }
+      
+      // Find the real driver
+      const driver = await userRepository.findById(driverId);
+      
+      if (!driver) {
+        logger.warn(`Driver not found with ID: ${driverId}`);
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+      
+      // Verify the user is actually a driver
+      if (driver.role !== 'driver') {
+        logger.warn(`User ${driverId} is not a driver, role: ${driver.role}`);
+        return res.status(400).json({ message: 'User is not a driver' });
+      }
+      
+      // Check if driver is active
+      if (driver.status !== 'active') {
+        logger.warn(`Driver ${driverId} is not active, status: ${driver.status}`);
+        return res.status(400).json({ message: 'Driver is not active' });
+      }
+      
+      logger.info(`Successfully found driver: ${driver.name}`);
+      
+      // Return basic driver information (privacy-conscious)
+      res.status(200).json({
+        id: driver.id,
+        name: driver.name,
+        email: driver.email,
+        role: driver.role,
+        status: driver.status,
+        createdAt: driver.createdAt
+      });
+    } catch (error) {
+      logger.error('Get driver info error:', error);
+      logger.error('Error stack:', error instanceof Error ? error.stack : 'Unknown error');
+      res.status(500).json({ 
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : 'Unknown error' : undefined
+      });
+    }
   }
 };

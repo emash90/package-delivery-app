@@ -21,6 +21,10 @@ router.put('/profile', authMiddleware, userController.updateProfile);
 // Admin routes
 router.get('/', authMiddleware, requirePermission(PERMISSIONS.USERS_READ), userController.getAllUsers);
 
+// Driver info routes (for package owners to view carrier info)
+router.get('/driver/:driverId/info', authMiddleware, userController.getDriverInfo);
+router.get('/package/:packageId/driver', authMiddleware, userController.getDriverInfoForPackage);
+
 // Role and permission routes
 router.use('/roles', roleRouter);
 router.use('/permissions', permissionRouter);

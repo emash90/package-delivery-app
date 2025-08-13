@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
@@ -7,6 +7,7 @@ import PageTransition from '@/components/PageTransition';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import GlassCard from '@/components/GlassCard';
+import CarrierInfoModal from '@/components/CarrierInfoModal';
 import { 
   Package as PackageIcon, 
   MapPin, 
@@ -60,12 +61,25 @@ const PackageDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { currentPackage, isLoading: loading, error } = useSelector((state: RootState) => state.packages);
+  
+  // State for Carrier Info Modal
+  const [isCarrierModalOpen, setIsCarrierModalOpen] = useState(false);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       dispatch(fetchPackageById(id));
     }
   }, [dispatch, id]);
+
+  // Handler for opening carrier info modal
+  const handleCarrierInfoClick = () => {
+    if (currentPackage && (currentPackage.id || (currentPackage as any)._id)) {
+      const packageId = currentPackage.id || (currentPackage as any)._id;
+      setSelectedPackageId(packageId);
+      setIsCarrierModalOpen(true);
+    }
+  };
 
   if (loading) {
     return (
@@ -362,7 +376,13 @@ const PackageDetail = () => {
                         >
                           Track Package
                         </Button>
-                        <Button className="w-full" variant="outline">Contact Carrier</Button>
+                        <Button 
+                          className="w-full" 
+                          variant="outline"
+                          onClick={handleCarrierInfoClick}
+                        >
+                          Carrier Info
+                        </Button>
                         <Button className="w-full" variant="destructive">Report Issue</Button>
                       </>
                     ) : (
@@ -384,6 +404,18 @@ const PackageDetail = () => {
             </div>
           </div>
         </main>
+
+        {/* Carrier Info Modal */}
+        <CarrierInfoModal
+          isOpen={isCarrierModalOpen}
+          onClose={() => setIsCarrierModalOpen(false)}
+          packageId={selectedPackageId}
+          packageInfo={currentPackage ? {
+            trackingId: currentPackage.trackingId || 'N/A',
+            status: currentPackage.status,
+            estimatedDelivery: currentPackage.eta
+          } : undefined}
+        />
         
         <Footer />
       </div>

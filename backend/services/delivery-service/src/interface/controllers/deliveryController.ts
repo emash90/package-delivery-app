@@ -163,6 +163,26 @@ export class DeliveryController {
     }
   };
 
+  getDeliveryByPackage = async (req: AuthRequest, res: Response) => {
+    try {
+      const { packageId } = req.params;
+      
+      if (!packageId) {
+        return res.status(400).json({ message: 'Package ID is required' });
+      }
+      
+      const delivery = await this.deliveryService.getDeliveryByPackageId(packageId);
+      
+      if (!delivery) {
+        return res.status(404).json({ message: 'No delivery found for this package' });
+      }
+      
+      res.status(200).json(delivery);
+    } catch (error) {
+      logger.error('Error fetching delivery by package:', error);
+      res.status(500).json({ message: 'Failed to fetch delivery information' });
+    }
+  };
 
 }
 

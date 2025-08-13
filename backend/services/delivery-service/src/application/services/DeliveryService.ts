@@ -45,6 +45,10 @@ export class DeliveryService implements IDeliveryService {
     return this.deliveryRepository.findById(deliveryId);
   }
 
+  async getDeliveryByPackageId(packageId: string): Promise<Delivery | null> {
+    return this.deliveryRepository.findByPackageId(packageId);
+  }
+
   async getPendingDeliveries(): Promise<Delivery[]> {
     return this.getPendingDeliveriesUseCase.execute();
   }

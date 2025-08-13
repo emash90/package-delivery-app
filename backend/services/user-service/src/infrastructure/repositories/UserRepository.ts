@@ -53,7 +53,7 @@ export class UserRepository implements IUserRepository {
 
   private mapToUser(userDoc: UserDocument): User {
     return {
-      id: userDoc._id.toString(),
+      id: userDoc._id?.toString(),
       name: userDoc.name,
       email: userDoc.email,
       password: userDoc.password,

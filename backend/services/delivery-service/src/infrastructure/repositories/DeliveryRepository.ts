@@ -69,7 +69,17 @@ export class DeliveryRepository implements IDeliveryRepository {
     }
   }
 
-  async findPending(status: String): Promise<Delivery[]> {
+  async findByPackageId(packageId: string): Promise<Delivery | null> {
+    try {
+      const delivery = await DeliveryModel.findOne({ packageId });
+      return delivery ? delivery.toJSON() as Delivery : null;
+    } catch (error) {
+      logger.error('Error finding delivery by package ID:', error);
+      throw error;
+    }
+  }
+
+  async findPending(): Promise<Delivery[]> {
     try {
       const deliveries = await DeliveryModel.find({
         status: { $in: ['pending', 'in transit'] }

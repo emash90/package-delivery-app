@@ -113,7 +113,9 @@ export const userApi = {
   }),
   deleteUser: (userId: string) => fetchData(`/users/${userId}`, {
     method: 'DELETE'
-  })
+  }),
+  getDriverInfo: (driverId: string) => fetchData(`/users/driver/${driverId}/info`),
+  getDriverInfoForPackage: (packageId: string) => fetchData(`/users/package/${packageId}/driver`)
 };
 
 export const roleApi = {
