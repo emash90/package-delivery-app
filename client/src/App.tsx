@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +10,7 @@ import { fetchCurrentUser } from "@/store/slices/authSlice";
 import { toast } from "sonner";
 import PermissionGuard from "@/components/PermissionGuard";
 import { UserPermissionProvider } from "@/contexts/UserPermissionContext";
+import ChatWindow from "@/components/chat/ChatWindow";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -46,6 +47,7 @@ const queryClient = new QueryClient({
 
 const AppContent = () => {
   const dispatch = useAppDispatch();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Fetch current user on app load if token exists
   useEffect(() => {
@@ -54,69 +56,76 @@ const AppContent = () => {
     }
   }, [dispatch]);
 
+  const toggleChat = () => setIsChatOpen(!isChatOpen);
+
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/track" element={<TrackPackage />} />
-      
-      {/* Package Owner Routes - Only accessible by owners */}
-      <Route 
-        path="/owner/dashboard" 
-        element={
-          <PermissionGuard requiredRole="owner" fallbackPath="/">
-            <OwnerDashboard />
-          </PermissionGuard>
-        } 
-      />
-      <Route 
-        path="/owner/package/:id" 
-        element={
-          <PermissionGuard requiredRole="owner" fallbackPath="/">
-            <PackageDetail />
-          </PermissionGuard>
-        } 
-      />
-      <Route 
-        path="/owner/create-package" 
-        element={
-          <PermissionGuard requiredRole="owner" fallbackPath="/">
-            <CreatePackage />
-          </PermissionGuard>
-        } 
-      />
-      
-      {/* Driver Routes - Only accessible by drivers */}
-      <Route 
-        path="/driver/dashboard" 
-        element={
-          <PermissionGuard requiredRole="driver" fallbackPath="/">
-            <DriverDashboard />
-          </PermissionGuard>
-        } 
-      />
-      
-      {/* Admin Routes - Only accessible by admins */}
-      <Route 
-        path="/admin/dashboard" 
-        element={
-          <PermissionGuard requiredRole="admin" fallbackPath="/">
-            <AdminDashboard />
-          </PermissionGuard>
-        } 
-      />
-      <Route 
-        path="/admin/users" 
-        element={
-          <PermissionGuard requiredRole="admin" fallbackPath="/">
-            <UserManagement />
-          </PermissionGuard>
-        } 
-      />
-      
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/track" element={<TrackPackage />} />
+
+        {/* Package Owner Routes - Only accessible by owners */}
+        <Route
+          path="/owner/dashboard"
+          element={
+            <PermissionGuard requiredRole="owner" fallbackPath="/">
+              <OwnerDashboard />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/owner/package/:id"
+          element={
+            <PermissionGuard requiredRole="owner" fallbackPath="/">
+              <PackageDetail />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/owner/create-package"
+          element={
+            <PermissionGuard requiredRole="owner" fallbackPath="/">
+              <CreatePackage />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Driver Routes - Only accessible by drivers */}
+        <Route
+          path="/driver/dashboard"
+          element={
+            <PermissionGuard requiredRole="driver" fallbackPath="/">
+              <DriverDashboard />
+            </PermissionGuard>
+          }
+        />
+
+        {/* Admin Routes - Only accessible by admins */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <PermissionGuard requiredRole="admin" fallbackPath="/">
+              <AdminDashboard />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <PermissionGuard requiredRole="admin" fallbackPath="/">
+              <UserManagement />
+            </PermissionGuard>
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      {/* Chat Window - Available on all pages */}
+      <ChatWindow isOpen={isChatOpen} onToggle={toggleChat} />
+    </>
   );
 };
 

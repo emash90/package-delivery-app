@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # MongoDB
   mongo:
@@ -101,6 +99,31 @@ services:
     networks:
       - packaroo-network 
 
+  # AI Agent Service
+  ai-agent-service:
+    build:
+      context: ./backend/services/ai-agent-service
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "${AI_SERVICE_PORT}:${AI_SERVICE_PORT}"
+    volumes:
+      - ./backend/services/ai-agent-service:/app
+      - /app/__pycache__
+    depends_on:
+      mongo:
+        condition: service_started
+      user-service:
+        condition: service_started
+      package-service:
+        condition: service_started
+      delivery-service:
+        condition: service_started
+    env_file:
+      - .env
+    networks:
+      - packaroo-network
+
   # API Gateway
   api-gateway:
     build:
@@ -116,6 +139,7 @@ services:
       - user-service
       - package-service
       - delivery-service
+      - ai-agent-service
     env_file:
       - .env
     networks:

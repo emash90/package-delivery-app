@@ -1,0 +1,46 @@
+# Frontend
+FRONTEND_PORT=9000
+VITE_API_URL=http://localhost:3000/api
+
+# AWS S3 Configuration (Frontend)
+VITE_AWS_REGION=us-east-1
+VITE_AWS_ACCESS_KEY_ID=your-access-key-id
+VITE_AWS_SECRET_ACCESS_KEY=your-secret-access-key
+VITE_AWS_S3_BUCKET_NAME=your-bucket-name
+
+# MongoDB
+MONGO_PORT=27017
+MONGO_ROOT_USER=admin
+MONGO_ROOT_PASS=password123
+MONGODB_URI=mongodb://admin:password123@mongo:27017/packaroo-project?authSource=admin
+
+# RabbitMQ
+RABBITMQ_AMQP_PORT=5672
+RABBITMQ_UI_PORT=15672
+RABBITMQ_DEFAULT_USER=admin
+RABBITMQ_DEFAULT_PASS=password123
+RABBITMQ_URI=amqp://admin:password123@rabbitmq:5672
+
+# Microservices
+USER_SERVICE_PORT=3001
+PACKAGE_SERVICE_PORT=3002
+DELIVERY_SERVICE_PORT=3003
+GATEWAY_PORT=3000
+
+# Service URLs (for Docker internal communication)
+USER_SERVICE_URL=http://user-service:3001
+PACKAGE_SERVICE_URL=http://package-service:3002
+DELIVERY_SERVICE_URL=http://delivery-service:3003
+AI_SERVICE_URL=http://ai-agent-service:3004
+
+# AI Agent Service Configuration
+AI_SERVICE_PORT=3004
+GOOGLE_AI_API_KEY=your-google-ai-api-key
+GOOGLE_AI_MODEL=gemini-pro
+GOOGLE_AI_TEMPERATURE=0.7
+GOOGLE_AI_MAX_TOKENS=1000
+GOOGLE_CLOUD_PROJECT_ID=your-google-cloud-project-id
+GOOGLE_CLOUD_REGION=us-central1
+
+# JWT Secret (shared across all services)
+JWT_SECRET=your-jwt-secret-key
